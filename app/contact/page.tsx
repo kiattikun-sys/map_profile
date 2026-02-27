@@ -1,14 +1,16 @@
 import Navbar from '@/components/Navbar'
-import { MapPin, Phone, Mail, Clock, Facebook, LineChart } from 'lucide-react'
+import Footer from '@/components/Footer'
+import { MapPin, Phone, Mail, Clock, Facebook, Building2 } from 'lucide-react'
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       <div className="pt-16 bg-gradient-to-br from-blue-700 to-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h1 className="text-4xl font-bold mb-3">ติดต่อเรา</h1>
-          <p className="text-blue-100 text-lg">พร้อมให้บริการและตอบทุกคำถามของคุณ</p>
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">ติดต่อเรา</span>
+          <h1 className="text-4xl font-bold mb-3">พร้อมรับฟังและให้บริการ</h1>
+          <p className="text-blue-100 text-lg">ทีมผู้เชี่ยวชาญของเราพร้อมตอบทุกคำถามและให้คำปรึกษาด้านวิศวกรรม</p>
         </div>
       </div>
 
@@ -17,37 +19,18 @@ export default function ContactPage() {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">ข้อมูลการติดต่อ</h2>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[
-                  {
-                    icon: MapPin,
-                    title: 'ที่อยู่',
-                    content: '123 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110',
-                    color: 'blue',
-                  },
-                  {
-                    icon: Phone,
-                    title: 'โทรศัพท์',
-                    content: '+66 2-123-4567',
-                    color: 'green',
-                  },
-                  {
-                    icon: Mail,
-                    title: 'อีเมล',
-                    content: 'contact@mapprofile.co.th',
-                    color: 'purple',
-                  },
-                  {
-                    icon: Clock,
-                    title: 'เวลาทำการ',
-                    content: 'จันทร์ – ศุกร์  08:00 – 17:00 น.',
-                    color: 'amber',
-                  },
+                  { icon: Building2, title: 'บริษัท',     content: 'บริษัท แมพ โปรไฟล์ วิศวกรรม จำกัด', color: 'blue' },
+                  { icon: MapPin,    title: 'ที่อยู่',     content: '123 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110', color: 'blue' },
+                  { icon: Phone,     title: 'โทรศัพท์',   content: '+66 2-123-4567', color: 'green' },
+                  { icon: Mail,      title: 'อีเมล',       content: 'contact@mapprofile.co.th', color: 'purple' },
+                  { icon: Clock,     title: 'เวลาทำการ',  content: 'จันทร์ – ศุกร์  08:00 – 17:00 น. (เสาร์ 09:00 – 12:00 น.)', color: 'amber' },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-4 p-4 bg-white rounded-xl shadow-sm border border-gray-100">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      item.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                      item.color === 'green' ? 'bg-green-100 text-green-700' :
+                      item.color === 'blue'   ? 'bg-blue-100 text-blue-700' :
+                      item.color === 'green'  ? 'bg-green-100 text-green-700' :
                       item.color === 'purple' ? 'bg-purple-100 text-purple-700' :
                       'bg-amber-100 text-amber-700'
                     }`}>
@@ -65,19 +48,22 @@ export default function ContactPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <h3 className="font-semibold text-gray-900 mb-4">ติดตามเราได้ที่</h3>
               <div className="flex gap-3">
-                <a
-                  href="#"
-                  className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
+                <a href="#" className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
                   <Facebook size={16} /> Facebook
                 </a>
-                <a
-                  href="#"
-                  className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
-                >
-                  <LineChart size={16} /> LINE Official
+                <a href="#" className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                  <span className="font-bold text-xs">LINE</span> LINE Official
                 </a>
               </div>
+            </div>
+
+            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+              <h3 className="font-semibold text-blue-900 mb-2">สาขาภูมิภาค</h3>
+              <ul className="space-y-2 text-sm text-blue-800">
+                <li className="flex items-center gap-2"><MapPin size={13} /> สาขาเชียงใหม่: 456 ถนนนิมมานเหมินทร์ เชียงใหม่ 50200</li>
+                <li className="flex items-center gap-2"><MapPin size={13} /> สาขาขอนแก่น: 789 ถนนมิตรภาพ ขอนแก่น 40000</li>
+                <li className="flex items-center gap-2"><MapPin size={13} /> สาขาสงขลา: 321 ถนนกาญจนวณิชย์ สงขลา 90000</li>
+              </ul>
             </div>
           </div>
 
@@ -144,6 +130,8 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

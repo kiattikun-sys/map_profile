@@ -1,7 +1,46 @@
 import { supabase } from '@/lib/supabase'
 import type { Project, Client } from '@/types/database'
 import Navbar from '@/components/Navbar'
-import { ExternalLink, Users } from 'lucide-react'
+import Footer from '@/components/Footer'
+import { ExternalLink, Users, Globe, Building2 } from 'lucide-react'
+
+const SECTOR_MAP: Record<string, { label: string; color: string }> = {
+  'pea.co.th':      { label: 'พลังงาน',       color: 'yellow' },
+  'doh.go.th':      { label: 'โยธา',          color: 'blue' },
+  'rid.go.th':      { label: 'ชลประทาน',    color: 'cyan' },
+  'ptt.co.th':      { label: 'พลังงาน',       color: 'yellow' },
+  'cmcity.go.th':   { label: 'ท้องถิ่น',     color: 'green' },
+  'railway.co.th':  { label: 'คมนาคม',      color: 'gray' },
+  'dpt.go.th':      { label: 'อาคาร/ผังเมือง', color: 'purple' },
+  'thaibev.com':    { label: 'อุตสาหกรรม',   color: 'orange' },
+  'pat.or.th':      { label: 'ท่าเรือ',      color: 'blue' },
+  'ieat.go.th':     { label: 'นิคมอุตสาหกรรม', color: 'indigo' },
+  'bangkok.go.th':  { label: 'ท้องถิ่น',     color: 'green' },
+  'cpfworldwide.com':{ label: 'อาหาร',        color: 'red' },
+  'kkpao.go.th':    { label: 'ท้องถิ่น',     color: 'green' },
+  'drr.go.th':      { label: 'โยธา',          color: 'blue' },
+  'pwa.co.th':      { label: 'สาธารณูปโภค',  color: 'teal' },
+  'glow.co.th':     { label: 'พลังงาน',       color: 'yellow' },
+}
+
+function getSector(website: string | null) {
+  if (!website) return null
+  const domain = Object.keys(SECTOR_MAP).find((d) => website.includes(d))
+  return domain ? SECTOR_MAP[domain] : null
+}
+
+const BADGE_COLORS: Record<string, string> = {
+  yellow:  'bg-yellow-100 text-yellow-800',
+  blue:    'bg-blue-100 text-blue-800',
+  cyan:    'bg-cyan-100 text-cyan-800',
+  green:   'bg-green-100 text-green-800',
+  gray:    'bg-gray-100 text-gray-700',
+  purple:  'bg-purple-100 text-purple-800',
+  orange:  'bg-orange-100 text-orange-800',
+  indigo:  'bg-indigo-100 text-indigo-800',
+  red:     'bg-red-100 text-red-800',
+  teal:    'bg-teal-100 text-teal-800',
+}
 
 export const revalidate = 60
 
@@ -19,55 +58,67 @@ export default async function ClientsPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       <div className="pt-16 bg-gradient-to-br from-blue-700 to-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <h1 className="text-4xl font-bold mb-3">ลูกค้าของเรา</h1>
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">ลูกค้าของเรา</span>
+          <h1 className="text-4xl font-bold mb-3">องค์กรและหน่วยงานชั้นนำ</h1>
           <p className="text-blue-100 text-lg">
-            องค์กรและบริษัทชั้นนำที่ไว้วางใจในบริการของเรา
+            ที่ไว้วางใจในคุณภาพการบริการของเรามาอย่างต่อเนื่อง — {clients?.length ?? 0} องค์กร
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {clients && clients.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {clients.map((client) => (
-              <div
-                key={client.id}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:-translate-y-0.5"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                    {client.logo ? (
-                      <img src={client.logo} alt={client.name} className="w-12 h-12 object-contain" />
-                    ) : (
-                      <Users size={24} className="text-gray-400" />
-                    )}
+            {clients.map((client) => {
+              const sector = getSector(client.website)
+              const count = projectCountByClient[client.id]
+              return (
+                <div
+                  key={client.id}
+                  className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:-translate-y-1 flex flex-col"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {client.logo ? (
+                        <img src={client.logo} alt={client.name} className="w-12 h-12 object-contain" />
+                      ) : (
+                        <Building2 size={24} className="text-gray-300" />
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-1.5">
+                      {count && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                          {count} โครงการ
+                        </span>
+                      )}
+                      {sector && (
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${BADGE_COLORS[sector.color]}`}>
+                          {sector.label}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  {projectCountByClient[client.id] && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                      {projectCountByClient[client.id]} โครงการ
-                    </span>
+                  <h3 className="font-semibold text-gray-900 leading-snug mb-2">{client.name}</h3>
+                  {client.description && (
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">{client.description}</p>
+                  )}
+                  {client.website && (
+                    <a
+                      href={client.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 hover:underline mt-auto"
+                    >
+                      <Globe size={11} /> {client.website.replace(/^https?:\/\//, '')}
+                    </a>
                   )}
                 </div>
-                <h3 className="font-semibold text-gray-900 leading-snug mb-2">{client.name}</h3>
-                {client.description && (
-                  <p className="text-sm text-gray-500 line-clamp-2 mb-3">{client.description}</p>
-                )}
-                {client.website && (
-                  <a
-                    href={client.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    <ExternalLink size={11} /> {client.website.replace(/^https?:\/\//, '')}
-                  </a>
-                )}
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <div className="text-center py-20 text-gray-400">
@@ -76,6 +127,8 @@ export default async function ClientsPage() {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   )
 }
