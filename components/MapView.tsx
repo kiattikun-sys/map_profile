@@ -5,12 +5,27 @@ import mapboxgl from 'mapbox-gl'
 import { Project, FilterState } from '@/types/database'
 import ProjectCard from './ProjectCard'
 
+const TYPE_COLOR_MATCH: mapboxgl.Expression = [
+  'match', ['get', 'project_type'],
+  'โยธา',           '#3b82f6',
+  'สาธารณูปโภค',    '#10b981',
+  'ถนน',            '#f59e0b',
+  'อาคาร',          '#8b5cf6',
+  'ไฟฟ้า',          '#f97316',
+  'ชลประทาน',       '#06b6d4',
+  'ท่าเรือ',         '#0ea5e9',
+  'ระบบระบายน้ำ',   '#6366f1',
+  'ภูมิสถาปัตย์',    '#22c55e',
+  '#1a56db',
+]
+
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
 
 const SOURCE_ID = 'projects'
 const LAYER_CLUSTERS = 'clusters'
 const LAYER_CLUSTER_COUNT = 'cluster-count'
 const LAYER_UNCLUSTERED = 'unclustered-point'
+const LAYER_UNCLUSTERED_HOVER = 'unclustered-point-hover'
 
 interface MapViewProps {
   projects: Project[]
@@ -116,10 +131,24 @@ export default function MapView({ projects, filters }: MapViewProps) {
         source: SOURCE_ID,
         filter: ['!', ['has', 'point_count']],
         paint: {
-          'circle-color': '#1a56db',
+          'circle-color': TYPE_COLOR_MATCH,
           'circle-radius': 10,
           'circle-stroke-width': 2,
           'circle-stroke-color': '#ffffff',
+        },
+      })
+
+      map.addLayer({
+        id: LAYER_UNCLUSTERED_HOVER,
+        type: 'circle',
+        source: SOURCE_ID,
+        filter: ['==', ['get', 'id'], ''],
+        paint: {
+          'circle-color': TYPE_COLOR_MATCH,
+          'circle-radius': 13,
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#ffffff',
+          'circle-opacity': 0.85,
         },
       })
 
@@ -152,8 +181,31 @@ export default function MapView({ projects, filters }: MapViewProps) {
 
       map.on('mouseenter', LAYER_CLUSTERS, () => { map.getCanvas().style.cursor = 'pointer' })
       map.on('mouseleave', LAYER_CLUSTERS, () => { map.getCanvas().style.cursor = '' })
-      map.on('mouseenter', LAYER_UNCLUSTERED, () => { map.getCanvas().style.cursor = 'pointer' })
-      map.on('mouseleave', LAYER_UNCLUSTERED, () => { map.getCanvas().style.cursor = '' })
+      const tooltip = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: 14,
+        className: 'map-tooltip',
+      })
+
+      map.on('mouseenter', LAYER_UNCLUSTERED, (e) => {
+        map.getCanvas().style.cursor = 'pointer'
+        const features = map.queryRenderedFeatures(e.point, { layers: [LAYER_UNCLUSTERED] })
+        if (!features.length) return
+        const props = features[0].properties
+        const geometry = features[0].geometry as GeoJSON.Point
+        map.setFilter(LAYER_UNCLUSTERED_HOVER, ['==', ['get', 'id'], props?.id ?? ''])
+        tooltip
+          .setLngLat(geometry.coordinates as [number, number])
+          .setHTML(`<span style="font-size:13px;font-weight:600;color:#1e293b">${props?.name ?? ''}</span>`)
+          .addTo(map)
+      })
+
+      map.on('mouseleave', LAYER_UNCLUSTERED, () => {
+        map.getCanvas().style.cursor = ''
+        map.setFilter(LAYER_UNCLUSTERED_HOVER, ['==', ['get', 'id'], ''])
+        tooltip.remove()
+      })
 
       setMapLoaded(true)
     })
