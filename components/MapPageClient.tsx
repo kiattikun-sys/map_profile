@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { Project, FilterState } from '@/types/database'
+import { Project, Client, FilterState } from '@/types/database'
 import { supabase } from '@/lib/supabase'
 import FilterPanel from './FilterPanel'
 import Navbar from './Navbar'
@@ -19,6 +19,7 @@ const MapView = dynamic(() => import('./MapView'), {
 
 export default function MapPageClient() {
   const [projects, setProjects] = useState<Project[]>([])
+  const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -39,8 +40,12 @@ export default function MapPageClient() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('projects').select('*').eq('status', 'active')
-      setProjects(data ?? [])
+      const [{ data: projectData }, { data: clientData }] = await Promise.all([
+        supabase.from('projects').select('*').eq('status', 'active'),
+        supabase.from('clients').select('*').order('name'),
+      ])
+      setProjects((projectData as Project[]) ?? [])
+      setClients((clientData as Client[]) ?? [])
       setLoading(false)
     }
     load()
@@ -55,6 +60,7 @@ export default function MapPageClient() {
             filters={filters}
             onChange={setFilters}
             projectCount={filteredProjects.length}
+            clients={clients}
           />
         </div>
 
@@ -76,6 +82,7 @@ export default function MapPageClient() {
             filters={filters}
             onChange={setFilters}
             projectCount={filteredProjects.length}
+            clients={clients}
           />
         </div>
       </div>

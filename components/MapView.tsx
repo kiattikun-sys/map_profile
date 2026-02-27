@@ -7,34 +7,10 @@ import ProjectCard from './ProjectCard'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!
 
-const PROJECT_TYPE_COLORS: Record<string, string> = {
-  'โยธา': '#3b82f6',
-  'สาธารณูปโภค': '#10b981',
-  'ถนน': '#f59e0b',
-  'อาคาร': '#8b5cf6',
-  'ไฟฟ้า': '#f97316',
-  'ชลประทาน': '#06b6d4',
-  'ท่าเรือ': '#0ea5e9',
-  'ระบบระบายน้ำ': '#6366f1',
-  'ภูมิสถาปัตย์': '#22c55e',
-  'อื่นๆ': '#6b7280',
-}
-
-function getColor(type: string | null) {
-  return PROJECT_TYPE_COLORS[type ?? ''] ?? '#1a56db'
-}
-
-function createMarkerEl(color: string): HTMLDivElement {
-  const el = document.createElement('div')
-  el.className = 'custom-marker'
-  el.innerHTML = `
-    <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16 0C7.163 0 0 7.163 0 16c0 12 16 24 16 24S32 28 32 16C32 7.163 24.837 0 16 0z" fill="${color}" stroke="white" stroke-width="2"/>
-      <circle cx="16" cy="16" r="6" fill="white" opacity="0.9"/>
-    </svg>
-  `
-  return el
-}
+const SOURCE_ID = 'projects'
+const LAYER_CLUSTERS = 'clusters'
+const LAYER_CLUSTER_COUNT = 'cluster-count'
+const LAYER_UNCLUSTERED = 'unclustered-point'
 
 interface MapViewProps {
   projects: Project[]
@@ -44,10 +20,36 @@ interface MapViewProps {
 export default function MapView({ projects, filters }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
-  const markersRef = useRef<mapboxgl.Marker[]>([])
-  const popupRef = useRef<mapboxgl.Popup | null>(null)
+  const projectsRef = useRef<Project[]>(projects)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+
+  const filteredProjects = projects.filter((p) => {
+    if (filters.search && !p.name.toLowerCase().includes(filters.search.toLowerCase())) return false
+    if (filters.projectType && p.project_type !== filters.projectType) return false
+    if (filters.province && p.province !== filters.province) return false
+    if (filters.year && String(p.year) !== filters.year) return false
+    if (filters.clientId && p.client_id !== filters.clientId) return false
+    return true
+  })
+
+  projectsRef.current = projects
+
+  const buildGeoJSON = useCallback((list: Project[]): GeoJSON.FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: list.map((p) => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [p.longitude, p.latitude] },
+      properties: {
+        id: p.id,
+        name: p.name,
+        project_type: p.project_type ?? '',
+        province: p.province ?? '',
+        year: p.year ?? '',
+        client_id: p.client_id ?? '',
+      },
+    })),
+  }), [])
 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return
@@ -64,6 +66,95 @@ export default function MapView({ projects, filters }: MapViewProps) {
     map.addControl(new mapboxgl.FullscreenControl(), 'top-right')
 
     map.on('load', () => {
+      map.addSource(SOURCE_ID, {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+        cluster: true,
+        clusterRadius: 50,
+        clusterMaxZoom: 14,
+      })
+
+      map.addLayer({
+        id: LAYER_CLUSTERS,
+        type: 'circle',
+        source: SOURCE_ID,
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': [
+            'step', ['get', 'point_count'],
+            '#60a5fa', 5,
+            '#3b82f6', 15,
+            '#1d4ed8',
+          ],
+          'circle-radius': [
+            'step', ['get', 'point_count'],
+            20, 5,
+            28, 15,
+            36,
+          ],
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#ffffff',
+        },
+      })
+
+      map.addLayer({
+        id: LAYER_CLUSTER_COUNT,
+        type: 'symbol',
+        source: SOURCE_ID,
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 13,
+        },
+        paint: { 'text-color': '#ffffff' },
+      })
+
+      map.addLayer({
+        id: LAYER_UNCLUSTERED,
+        type: 'circle',
+        source: SOURCE_ID,
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': '#1a56db',
+          'circle-radius': 10,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#ffffff',
+        },
+      })
+
+      map.on('click', LAYER_CLUSTERS, (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: [LAYER_CLUSTERS] })
+        if (!features.length) return
+        const clusterId = features[0].properties?.cluster_id
+        const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource
+        source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err || zoom == null) return
+          const geometry = features[0].geometry as GeoJSON.Point
+          map.easeTo({ center: geometry.coordinates as [number, number], zoom })
+        })
+      })
+
+      map.on('click', LAYER_UNCLUSTERED, (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: [LAYER_UNCLUSTERED] })
+        if (!features.length) return
+        const props = features[0].properties
+        const project = projectsRef.current.find((p) => p.id === props?.id)
+        if (!project) return
+        setSelectedProject(project)
+        const geometry = features[0].geometry as GeoJSON.Point
+        map.flyTo({
+          center: geometry.coordinates as [number, number],
+          zoom: Math.max(map.getZoom(), 10),
+          duration: 800,
+        })
+      })
+
+      map.on('mouseenter', LAYER_CLUSTERS, () => { map.getCanvas().style.cursor = 'pointer' })
+      map.on('mouseleave', LAYER_CLUSTERS, () => { map.getCanvas().style.cursor = '' })
+      map.on('mouseenter', LAYER_UNCLUSTERED, () => { map.getCanvas().style.cursor = 'pointer' })
+      map.on('mouseleave', LAYER_UNCLUSTERED, () => { map.getCanvas().style.cursor = '' })
+
       setMapLoaded(true)
     })
 
@@ -75,52 +166,15 @@ export default function MapView({ projects, filters }: MapViewProps) {
     }
   }, [])
 
-  const filteredProjects = projects.filter((p) => {
-    if (filters.search && !p.name.toLowerCase().includes(filters.search.toLowerCase())) return false
-    if (filters.projectType && p.project_type !== filters.projectType) return false
-    if (filters.province && p.province !== filters.province) return false
-    if (filters.year && String(p.year) !== filters.year) return false
-    if (filters.clientId && p.client_id !== filters.clientId) return false
-    return true
-  })
-
-  const placeMarkers = useCallback(() => {
+  useEffect(() => {
+    if (!mapLoaded) return
     const map = mapRef.current
     if (!map) return
-
-    markersRef.current.forEach((m) => m.remove())
-    markersRef.current = []
-    if (popupRef.current) {
-      popupRef.current.remove()
-      popupRef.current = null
-    }
+    const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource | undefined
+    if (!source) return
+    source.setData(buildGeoJSON(filteredProjects))
     setSelectedProject(null)
-
-    filteredProjects.forEach((project) => {
-      const el = createMarkerEl(getColor(project.project_type))
-
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat([project.longitude, project.latitude])
-        .addTo(map)
-
-      el.addEventListener('click', () => {
-        setSelectedProject(project)
-        map.flyTo({
-          center: [project.longitude, project.latitude],
-          zoom: Math.max(map.getZoom(), 10),
-          duration: 800,
-        })
-      })
-
-      markersRef.current.push(marker)
-    })
-  }, [filteredProjects])
-
-  useEffect(() => {
-    if (mapLoaded) {
-      placeMarkers()
-    }
-  }, [mapLoaded, placeMarkers])
+  }, [mapLoaded, filteredProjects, buildGeoJSON])
 
   const addOverlay = useCallback(() => {
     const map = mapRef.current

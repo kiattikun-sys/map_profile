@@ -1,6 +1,6 @@
 'use client'
 
-import { FilterState } from '@/types/database'
+import { FilterState, Client } from '@/types/database'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
 
 const PROJECT_TYPES = [
@@ -32,9 +32,10 @@ interface FilterPanelProps {
   filters: FilterState
   onChange: (filters: FilterState) => void
   projectCount: number
+  clients?: Client[]
 }
 
-export default function FilterPanel({ filters, onChange, projectCount }: FilterPanelProps) {
+export default function FilterPanel({ filters, onChange, projectCount, clients = [] }: FilterPanelProps) {
   const hasActiveFilters = filters.search || filters.projectType || filters.province || filters.year || filters.clientId
 
   const update = (key: keyof FilterState, value: string) => {
@@ -119,6 +120,22 @@ export default function FilterPanel({ filters, onChange, projectCount }: FilterP
           ))}
         </select>
       </div>
+
+      {clients.length > 0 && (
+        <div>
+          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 block">ลูกค้า</label>
+          <select
+            value={filters.clientId}
+            onChange={(e) => update('clientId', e.target.value)}
+            className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="">ทั้งหมด</option>
+            {clients.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   )
 }
