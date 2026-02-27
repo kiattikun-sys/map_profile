@@ -1,10 +1,13 @@
+'use client'
+
 import Link from 'next/link'
-import { MapPin, Phone, Mail, Facebook } from 'lucide-react'
+import { MapPin, Phone, Mail, Facebook, ArrowUp } from 'lucide-react'
 
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-emerald-500" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
 
           <div className="md:col-span-1">
@@ -93,8 +96,16 @@ export default function Footer() {
 
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
-          <span>© {new Date().getFullYear()} บริษัท ไตรพีระ จำกัด (TRIPIRA CO.,LTD.). สงวนลิขสิทธิ์</span>
-          <span>ภูมิสถาปัตยกรรม · วิศวกรรม · Geomatics Survey</span>
+          <span>© {new Date().getFullYear()} บริษัท ไตรพีระ จำกัด (TRIPIRA CO.,LTD.) · สงวนลิขสิทธิ์</span>
+          <div className="flex items-center gap-4">
+            <span className="hidden sm:inline">ภูมิสถาปัตยกรรม · วิศวกรรม · Geomatics Survey</span>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center gap-1 text-gray-500 hover:text-white transition-colors"
+            >
+              <ArrowUp size={12} /> กลับด้านบน
+            </button>
+          </div>
         </div>
       </div>
     </footer>
