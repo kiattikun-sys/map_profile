@@ -47,6 +47,17 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   if (!project) notFound()
 
+  const { data: relatedRaw } = project.project_type
+    ? await supabase
+        .from('projects')
+        .select('id, name, images, province, year, project_type')
+        .eq('status', 'active')
+        .eq('project_type', project.project_type)
+        .neq('id', id)
+        .limit(3)
+    : { data: [] }
+  const related = (relatedRaw ?? []) as Pick<Project, 'id' | 'name' | 'images' | 'province' | 'year' | 'project_type'>[]
+
   const cover = getProjectCoverImage(project.images)
   const projectSchema = {
     '@context': 'https://schema.org',
@@ -71,7 +82,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <ProjectDetailClient project={project} />
+      <ProjectDetailClient project={project} related={related} />
       <Script
         id="project-schema"
         type="application/ld+json"

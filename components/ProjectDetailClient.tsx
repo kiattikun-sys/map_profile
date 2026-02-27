@@ -4,17 +4,20 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Project } from '@/types/database'
+import { getProjectCoverImage, getTypeGradient, getProjectImageUrl, getProjectDocUrl } from '@/lib/project-utils'
 import { MapPin, Calendar, Tag, FileText, ArrowLeft, ChevronLeft, ChevronRight, Layers, X, ExternalLink, Phone, ZoomIn, Copy, Check } from 'lucide-react'
 import Link from 'next/link'
-import { getProjectImageUrl, getProjectDocUrl, getTypeGradient } from '@/lib/project-utils'
 
 const MiniMap = dynamic(() => import('./MiniMap'), { ssr: false })
 
+type RelatedProject = Pick<Project, 'id' | 'name' | 'images' | 'province' | 'year' | 'project_type'>
+
 interface ProjectDetailClientProps {
   project: Project & { clients?: { name: string; logo: string | null; website: string | null } | null }
+  related?: RelatedProject[]
 }
 
-export default function ProjectDetailClient({ project }: ProjectDetailClientProps) {
+export default function ProjectDetailClient({ project, related = [] }: ProjectDetailClientProps) {
   const [imgIndex, setImgIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIdx, setLightboxIdx] = useState(0)
@@ -372,6 +375,51 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
           </motion.div>
         </div>
       </div>
+
+      {/* Related projects */}
+      {related.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <div className="border-t border-gray-200 pt-10">
+            <h2 className="text-lg font-bold text-gray-900 mb-5">โครงการที่เกี่ยวข้อง</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {related.map((r) => {
+                const rCover = getProjectCoverImage(r.images)
+                const rGrad = getTypeGradient(r.project_type)
+                return (
+                  <Link
+                    key={r.id}
+                    href={`/projects/${r.id}`}
+                    className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group"
+                  >
+                    <div className={`h-36 bg-gradient-to-br ${rGrad} relative overflow-hidden`}>
+                      {rCover ? (
+                        <img src={rCover} alt={r.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <MapPin size={32} className="text-white/25" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                      {r.project_type && (
+                        <span className="absolute bottom-2 left-2 text-xs bg-white/20 backdrop-blur-sm text-white px-2 py-0.5 rounded-full border border-white/20 font-medium">
+                          {r.project_type}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 group-hover:text-blue-700 transition-colors">{r.name}</h3>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                        {r.province && <span className="flex items-center gap-1"><MapPin size={10} />{r.province}</span>}
+                        {r.year && <span className="flex items-center gap-1"><Calendar size={10} />{r.year}</span>}
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
