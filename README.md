@@ -1,10 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Map Profile 🗺️
 
-## Getting Started
+**Company Profile แบบ Map-first** — ใช้แผนที่เป็นศูนย์กลางในการนำเสนอผลงานโครงการของบริษัท
 
-First, run the development server:
+## Tech Stack
+
+- **Next.js 16** + TypeScript + Tailwind CSS
+- **Mapbox GL JS** — แผนที่, หมุด, Overlay
+- **Supabase** — PostgreSQL, Auth, Storage
+- **Vercel** — Deployment
+
+---
+
+## การตั้งค่า Environment Variables
+
+สร้างไฟล์ `.env.local` และใส่ค่าต่อไปนี้:
+
+```env
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+---
+
+## ตั้งค่า Supabase Database
+
+1. เปิด [Supabase Dashboard](https://supabase.com) → SQL Editor
+2. รันไฟล์ `lib/supabase-schema.sql` เพื่อสร้างตาราง + sample data
+3. ไปที่ **Storage** → สร้าง Buckets ต่อไปนี้ (Public):
+   - `project-images`
+   - `project-documents`
+   - `overlay-images`
+4. ไปที่ **Authentication** → สร้างบัญชีผู้ใช้สำหรับ Admin
+
+---
+
+## โครงสร้างโปรเจค
+
+```
+app/
+├── page.tsx              # หน้าหลัก (Map View)
+├── projects/
+│   ├── page.tsx          # รายการโครงการทั้งหมด
+│   └── [id]/page.tsx     # รายละเอียดโครงการ
+├── about/page.tsx        # เกี่ยวกับเรา
+├── clients/page.tsx      # ลูกค้า
+├── contact/page.tsx      # ติดต่อ
+└── admin/
+    ├── page.tsx          # Admin Dashboard
+    └── login/page.tsx    # Admin Login
+
+components/
+├── Navbar.tsx            # Navigation
+├── MapView.tsx           # แผนที่หลัก (Mapbox)
+├── MapPageClient.tsx     # Client wrapper สำหรับหน้าแผนที่
+├── FilterPanel.tsx       # กรองโครงการ
+├── ProjectCard.tsx       # การ์ดโครงการ (popup)
+├── ProjectDetailClient.tsx # รายละเอียดโครงการ
+├── MiniMap.tsx           # แผนที่ขนาดเล็ก (satellite)
+└── admin/
+    ├── AdminLoginClient.tsx    # หน้า Login
+    ├── AdminDashboard.tsx      # Dashboard + ตาราง
+    ├── AdminProjectForm.tsx    # Form เพิ่ม/แก้ไขโครงการ (4 steps)
+    ├── AdminClientForm.tsx     # Form เพิ่ม/แก้ไขลูกค้า
+    ├── PinPickerMap.tsx        # คลิกปักหมุดบนแผนที่
+    └── OverlayEditorMap.tsx    # วาง Layout Plan overlay
+
+lib/
+├── supabase.ts           # Supabase client
+├── supabase-server.ts    # Supabase server client (SSR)
+└── supabase-schema.sql   # SQL schema + sample data
+```
+
+---
+
+## รันโปรเจค
 
 ```bash
+npm install
 npm run dev
 # or
 yarn dev
