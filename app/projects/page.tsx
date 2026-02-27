@@ -6,15 +6,16 @@ import Link from 'next/link'
 import { MapPin, Calendar, ArrowRight, Building2, Zap, Droplets, Ship, TreePine, HardHat, Wrench } from 'lucide-react'
 
 const TYPE_CONFIG: Record<string, { color: string; from: string; to: string; icon: React.ElementType }> = {
+  'ภูมิสถาปัตย์':   { color: 'emerald', from: 'from-emerald-600', to: 'to-emerald-800', icon: TreePine },
+  'สำรวจ':         { color: 'teal',   from: 'from-teal-600',   to: 'to-teal-800',   icon: MapPin },
+  'อาคาร':         { color: 'purple', from: 'from-purple-600', to: 'to-purple-800', icon: Building2 },
   'โยธา':          { color: 'blue',   from: 'from-blue-600',   to: 'to-blue-800',   icon: HardHat },
   'สาธารณูปโภค':   { color: 'green',  from: 'from-green-600',  to: 'to-green-800',  icon: Wrench },
   'ถนน':           { color: 'amber',  from: 'from-amber-500',  to: 'to-amber-700',  icon: MapPin },
-  'อาคาร':         { color: 'purple', from: 'from-purple-600', to: 'to-purple-800', icon: Building2 },
   'ไฟฟ้า':         { color: 'orange', from: 'from-orange-500', to: 'to-orange-700', icon: Zap },
   'ชลประทาน':      { color: 'cyan',   from: 'from-cyan-500',   to: 'to-cyan-700',   icon: Droplets },
   'ท่าเรือ':        { color: 'sky',    from: 'from-sky-500',    to: 'to-sky-700',    icon: Ship },
   'ระบบระบายน้ำ':  { color: 'indigo', from: 'from-indigo-500', to: 'to-indigo-700', icon: Droplets },
-  'ภูมิสถาปัตย์':   { color: 'green',  from: 'from-emerald-500',to: 'to-emerald-700', icon: TreePine },
 }
 
 export const revalidate = 60
@@ -40,9 +41,9 @@ export default async function ProjectsPage() {
       {/* Hero */}
       <div className="pt-16 bg-gradient-to-br from-blue-700 via-blue-800 to-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">ผลงานของเรา</span>
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">TRIPIRA — ผลงานของเรา</span>
           <h1 className="text-4xl font-bold mb-3">โครงการทั้งหมด</h1>
-          <p className="text-blue-100 text-lg">ผลงานคุณภาพทั่วทุกภาคของประเทศไทย</p>
+          <p className="text-blue-100 text-lg">ผลงานภูมิสถาปัตยกรรม วิศวกรรม และสำรวจ ทั่วทุกภาคของประเทศไทย</p>
           <div className="flex flex-wrap gap-6 mt-8">
             <div className="text-center">
               <p className="text-3xl font-bold">{projects?.length ?? 0}</p>

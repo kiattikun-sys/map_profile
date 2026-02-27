@@ -5,22 +5,11 @@ import Footer from '@/components/Footer'
 import { ExternalLink, Users, Globe, Building2 } from 'lucide-react'
 
 const SECTOR_MAP: Record<string, { label: string; color: string }> = {
-  'pea.co.th':      { label: 'พลังงาน',       color: 'yellow' },
-  'doh.go.th':      { label: 'โยธา',          color: 'blue' },
-  'rid.go.th':      { label: 'ชลประทาน',    color: 'cyan' },
-  'ptt.co.th':      { label: 'พลังงาน',       color: 'yellow' },
-  'cmcity.go.th':   { label: 'ท้องถิ่น',     color: 'green' },
-  'railway.co.th':  { label: 'คมนาคม',      color: 'gray' },
-  'dpt.go.th':      { label: 'อาคาร/ผังเมือง', color: 'purple' },
-  'thaibev.com':    { label: 'อุตสาหกรรม',   color: 'orange' },
-  'pat.or.th':      { label: 'ท่าเรือ',      color: 'blue' },
-  'ieat.go.th':     { label: 'นิคมอุตสาหกรรม', color: 'indigo' },
-  'bangkok.go.th':  { label: 'ท้องถิ่น',     color: 'green' },
-  'cpfworldwide.com':{ label: 'อาหาร',        color: 'red' },
-  'kkpao.go.th':    { label: 'ท้องถิ่น',     color: 'green' },
-  'drr.go.th':      { label: 'โยธา',          color: 'blue' },
-  'pwa.co.th':      { label: 'สาธารณูปโภค',  color: 'teal' },
-  'glow.co.th':     { label: 'พลังงาน',       color: 'yellow' },
+  'dpt.go.th':         { label: 'รัฐ — ภูมิสถาปัตย์',  color: 'purple' },
+  'bangchak.co.th':    { label: 'พลังงาน',            color: 'yellow' },
+  'pttplc.com':        { label: 'พลังงาน',            color: 'yellow' },
+  'lotuss.com':        { label: 'ค้าปลีก',           color: 'green' },
+  'singburipao.go.th': { label: 'ท้องถิ่น',           color: 'blue' },
 }
 
 function getSector(website: string | null) {
@@ -63,9 +52,9 @@ export default async function ClientsPage() {
       <div className="pt-16 bg-gradient-to-br from-blue-700 to-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">ลูกค้าของเรา</span>
-          <h1 className="text-4xl font-bold mb-3">องค์กรและหน่วยงานชั้นนำ</h1>
+          <h1 className="text-4xl font-bold mb-3">ลูกค้าของเรา</h1>
           <p className="text-blue-100 text-lg">
-            ที่ไว้วางใจในคุณภาพการบริการของเรามาอย่างต่อเนื่อง — {clients?.length ?? 0} องค์กร
+            หน่วยงานรัฐชั้นนำและบริษัทเอกชนระดับประเทศที่ไว้วางใจในคุณภาพงานของเรา
           </p>
         </div>
       </div>

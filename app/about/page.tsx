@@ -3,50 +3,47 @@ import Footer from '@/components/Footer'
 import {
   Building2, Users, MapPin, Award, Target, Eye,
   CheckCircle2, Briefcase, GraduationCap, Wrench,
-  Droplets, Zap, TreePine, Ship, HardHat,
+  TreePine, HardHat, ScanLine, Phone,
 } from 'lucide-react'
 
 const STATS = [
-  { icon: Building2, label: 'โครงการที่ดำเนินการแล้ว', value: '500+', color: 'blue' },
-  { icon: MapPin, label: 'จังหวัดทั่วประเทศ', value: '77', color: 'green' },
-  { icon: Users, label: 'ลูกค้าและหน่วยงาน', value: '120+', color: 'purple' },
-  { icon: Award, label: 'ปีประสบการณ์', value: '20+', color: 'amber' },
+  { icon: Building2, label: 'โครงการที่ดำเนินการแล้ว', value: '200+', color: 'blue' },
+  { icon: MapPin,    label: 'จังหวัดทั่วประเทศ',        value: '30+',  color: 'green' },
+  { icon: Users,     label: 'ลูกค้าภาครัฐและเอกชน',     value: '10+',  color: 'purple' },
+  { icon: Award,     label: 'ปีประสบการณ์',              value: '15+',  color: 'amber' },
 ]
 
 const SERVICES = [
-  { icon: HardHat,    title: 'วิศวกรรมโยธา',      desc: 'ออกแบบและก่อสร้างสะพาน ถนน โครงสร้างพื้นฐาน และงานโยธาขนาดใหญ่' },
-  { icon: Wrench,     title: 'ระบบสาธารณูปโภค',   desc: 'วางระบบประปา ไฟฟ้า โทรคมนาคม สำหรับชุมชน เมือง และนิคมอุตสาหกรรม' },
-  { icon: Droplets,   title: 'งานชลประทาน',        desc: 'ก่อสร้างเขื่อน ฝาย อ่างเก็บน้ำ และระบบส่งน้ำเพื่อการเกษตร' },
-  { icon: Building2,  title: 'ก่อสร้างอาคาร',      desc: 'อาคารสำนักงาน โรงพยาบาล โรงงาน ศูนย์ราชการ มาตรฐาน ISO 9001' },
-  { icon: Zap,        title: 'ระบบไฟฟ้าแรงสูง',    desc: 'สายส่ง 115–230 kV สถานีไฟฟ้าย่อย และระบบจำหน่ายไฟฟ้าชนบท' },
-  { icon: Ship,       title: 'งานท่าเรือ',          desc: 'ก่อสร้างท่าเทียบเรือ ถมทะเล และโครงสร้างงานทางน้ำ' },
-  { icon: TreePine,   title: 'ภูมิสถาปัตยกรรม',   desc: 'ออกแบบสวนสาธารณะ พื้นที่สีเขียว และงานภูมิทัศน์เมือง' },
-  { icon: Briefcase,  title: 'ที่ปรึกษาโครงการ',   desc: 'PM/CM บริหารโครงการ ควบคุมงาน และให้คำปรึกษาด้านวิศวกรรม' },
+  { icon: TreePine,   title: 'ภูมิสถาปัตยกรรม',        desc: 'ออกแบบพัฒนาพื้นที่สาธารณะ ริมน้ำ สวนเทิดพระเกียรติ และภูมิทัศน์เมืองระดับชาติ' },
+  { icon: HardHat,    title: 'วิศวกรรมโยธา',            desc: 'ออกแบบโครงสร้างพื้นฐาน สะพาน ทางเดินเท้า และกำแพงกันดินริมน้ำ' },
+  { icon: ScanLine,   title: 'งานสำรวจและ Geomatics',   desc: 'Topographic Survey, Drone Mapping, งานสำรวจผังเมืองและพื้นที่เอกชนขนาดใหญ่' },
+  { icon: Building2,  title: 'ออกแบบอาคาร',             desc: 'แบบมาตรฐานสถานีบริการน้ำมัน แบบขออนุญาตก่อสร้าง และอาคารพาณิชย์ขนาดใหญ่' },
+  { icon: Wrench,     title: 'บริหารโครงการ (PM/CM)',    desc: 'ควบคุมงาน ตรวจงาน และบริหารโครงการก่อสร้างในพื้นที่ห่างไกล' },
+  { icon: Briefcase,  title: 'ที่ปรึกษาและออกแบบ',      desc: 'ให้คำปรึกษาด้านวิศวกรรม งานศึกษาความเหมาะสม และออกแบบรายละเอียด' },
 ]
 
 const TEAM = [
-  { name: 'ดร.สมชาย วิศวกรรมไทย',  role: 'กรรมการผู้จัดการ',            exp: 'วศ.ด. จุฬาลงกรณ์มหาวิทยาลัย · ประสบการณ์ 28 ปี' },
-  { name: 'นางสาวนภาพร ชัยโกศล',   role: 'ผู้อำนวยการฝ่ายวิศวกรรม',    exp: 'วศ.ม. มหาวิทยาลัยเกษตรศาสตร์ · ประสบการณ์ 22 ปี' },
-  { name: 'นายอนันต์ สมิทธิวงศ์',   role: 'หัวหน้าฝ่ายก่อสร้าง',         exp: 'วศ.บ. มหาวิทยาลัยขอนแก่น · ประสบการณ์ 18 ปี' },
-  { name: 'นางวาสนา ธนกิจมั่นคง',   role: 'ผู้อำนวยการฝ่ายการเงิน',     exp: 'MBA จุฬาลงกรณ์มหาวิทยาลัย · ประสบการณ์ 15 ปี' },
+  { name: 'พีรพงษ์ ทับนิล',      role: 'Project Manager',   exp: 'ผู้จัดการโครงการ · โทร 080-996-1080' },
+  { name: 'ริณยพัทธ์ แทนสกุล',  role: 'Account Manager',   exp: 'ผู้จัดการบัญชี · โทร 084-746-3969' },
 ]
 
 const CERTS = [
-  'ISO 9001:2015 ระบบบริหารคุณภาพ',
-  'ISO 14001:2015 ระบบจัดการสิ่งแวดล้อม',
-  'ISO 45001:2018 ระบบบริหารอาชีวอนามัยและความปลอดภัย',
-  'มาตรฐาน TISI วิศวกรรมและก่อสร้าง',
-  'สมาชิกสมาคมวิศวกรรมสถานแห่งประเทศไทย (วสท.)',
-  'ใบอนุญาตผู้รับจ้างก่อสร้าง ชั้น 1 กระทรวงมหาดไทย',
+  'จดทะเบียนบริษัทถูกต้องตามกฎหมาย กระทรวงพาณิชย์',
+  'งานออกแบบภูมิสถาปัตยกรรมระดับชาติ — กรมโยธาธิการและผังเมือง',
+  'งานสำรวจ Topographic และ Drone Mapping มาตรฐานสากล',
+  'งานออกแบบอาคาร — ได้รับความไว้วางใจจาก Bangchak, PTT, Lotus\'s',
+  'ประสบการณ์งานพระราชฐาน — ระดับความน่าเชื่อถือสูงสุด',
+  'งานพัฒนาชุมชนริมน้ำโขง — ครอบคลุมกลุ่มจังหวัดภาคอีสาน',
 ]
 
 const MILESTONES = [
-  { year: '2547', title: 'ก่อตั้งบริษัท', desc: 'เริ่มต้นด้วยทีมวิศวกร 12 คน รับงานโยธาขนาดเล็ก' },
-  { year: '2552', title: 'ขยายสู่งานภูมิภาค', desc: 'เปิดสาขาในภาคเหนือและอีสาน รับงานโครงการรัฐ' },
-  { year: '2558', title: 'ได้รับ ISO 9001', desc: 'ผ่านการรับรองมาตรฐานคุณภาพสากล ISO 9001:2015' },
-  { year: '2562', title: 'ก้าวสู่ 300 โครงการ', desc: 'ดำเนินโครงการสะสมเกิน 300 โครงการทั่วประเทศ' },
-  { year: '2566', title: 'นวัตกรรมดิจิทัล', desc: 'เปิดตัว Map Profile ระบบบริหารโครงการด้วย GIS' },
-  { year: '2567', title: 'ขยายสู่ ASEAN', desc: 'รับงานโครงการในเมียนมาและ สปป.ลาว' },
+  { year: '2552', title: 'ก่อตั้งบริษัท', desc: 'จดทะเบียน บริษัท ไตรพีระ จำกัด ที่อยู่ 46/178 ถ.นวลจันทร์ เขตบึงกุ่ม กรุงเทพฯ' },
+  { year: '2560', title: 'งานพระราชฐาน', desc: 'ได้รับสัญญาปรับปรุงอาคารพระตำหนักจิตรดา กรมโยธาธิการฯ มูลค่า 12.5 ล้านบาท' },
+  { year: '2561', title: 'Bangchak ระดับชาติ', desc: 'เริ่มงานแบบมาตรฐานสถานีบริการ Bangchak 249 สาขา — จุดเริ่มต้นงาน National Scale' },
+  { year: '2563', title: 'อีสานกลาง ระยะที่ 1', desc: 'ออกแบบพัฒนาพื้นที่กลุ่มจังหวัดอีสานกลาง ร้อยเอ็ด มหาสารคาม นครพนม' },
+  { year: '2564', title: 'ริมโขง นครพนม', desc: 'ออกแบบพัฒนาพื้นที่ริมแม่น้ำโขง 3 จุด นครพนม ระยะที่ 1 มูลค่ารวม 220 ล้านบาท' },
+  { year: '2566', title: 'ชุมพร + สิงห์บุรี', desc: 'ปรับปรุงภูมิทัศน์ชายฝั่ง ชุมพร 221 ล้านบาท และสะพานสิงห์บุรี 60 ล้านบาท' },
+  { year: '2567', title: 'Map Profile Platform', desc: 'เปิดตัวระบบ Map Profile — บริหารโครงการทั่วประเทศด้วย GIS Technology' },
 ]
 
 export default function AboutPage() {
@@ -60,16 +57,16 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
             <div className="max-w-3xl">
               <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-4">
-                บริษัท แมพ โปรไฟล์ วิศวกรรม จำกัด
+                TRIPIRA CO., LTD. · บริษัท ไตรพีระ จำกัด
               </span>
               <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-                สร้างโครงสร้างพื้นฐาน<br className="hidden md:block" />
-                ที่ยั่งยืนให้ประเทศไทย
+                ออกแบบพื้นที่สาธารณะ<br className="hidden md:block" />
+                ระดับชาติ ด้วยความเชี่ยวชาญจริง
               </h1>
               <p className="text-lg text-blue-100 leading-relaxed">
-                บริษัทวิศวกรรมและก่อสร้างชั้นนำที่มีประสบการณ์กว่า 20 ปี
-                ในการดำเนินโครงการขนาดใหญ่ทั่วทุกภาคของประเทศ
-                ด้วยทีมวิศวกรมืออาชีพกว่า 350 คน และมาตรฐาน ISO ระดับสากล
+                บริษัทวิศวกรรมและภูมิสถาปัตยกรรมที่ได้รับความไว้วางใจจากหน่วยงานรัฐชั้นนำ
+                อาทิ กรมโยธาธิการและผังเมือง Bangchak PTT และ Lotus's
+                ด้วยผลงานมูลค่ารวมกว่า 1,500 ล้านบาททั่วประเทศ
               </p>
             </div>
           </div>
@@ -107,12 +104,13 @@ export default function AboutPage() {
                 พันธกิจของเรา
               </h2>
               <p className="text-gray-600 leading-relaxed mb-3">
-                มุ่งมั่นพัฒนาโครงสร้างพื้นฐานของประเทศด้วยมาตรฐานคุณภาพสูงสุด
-                ตรงต่อเวลา และอยู่ในงบประมาณที่กำหนด เพื่อยกระดับคุณภาพชีวิตของประชาชน
+                บริษัท ไตรพีระ จำกัด มุ่งมั่นออกแบบและพัฒนาพื้นที่สาธารณะ
+                ภูมิทัศน์เมือง และโครงสร้างพื้นฐานให้มีคุณภาพสูงสุด
+                ตอบสนองความต้องการของชุมชนและหน่วยงานรัฐอย่างแท้จริง
               </p>
               <p className="text-gray-600 leading-relaxed">
-                เราให้ความสำคัญกับความปลอดภัยในการทำงาน สิ่งแวดล้อม
-                และการมีส่วนร่วมของชุมชนในทุกโครงการที่เราดำเนินการ
+                เราเน้นความแม่นยำในการสำรวจ ความสร้างสรรค์ในการออกแบบ
+                และความรับผิดชอบในการส่งมอบงานตรงเวลาและงบประมาณ
               </p>
             </div>
 
@@ -124,12 +122,13 @@ export default function AboutPage() {
                 วิสัยทัศน์
               </h2>
               <p className="text-gray-600 leading-relaxed mb-3">
-                เป็นบริษัทวิศวกรรมและก่อสร้างชั้นนำของอาเซียนภายในปี 2570
-                โดยใช้นวัตกรรม BIM เทคโนโลยี GIS และ AI ในการบริหารโครงการ
+                เป็นบริษัทออกแบบภูมิสถาปัตยกรรมและวิศวกรรมชั้นนำของไทย
+                ที่บูรณาการเทคโนโลยี GIS Drone Survey และ Digital Platform
+                เข้ากับงานออกแบบระดับชาติ
               </p>
               <p className="text-gray-600 leading-relaxed">
-                สร้างผลงานที่โดดเด่น ได้มาตรฐานสากล และเป็นที่ยอมรับของลูกค้า
-                ทั้งภาครัฐและเอกชนทั้งในและต่างประเทศ
+                สร้างพื้นที่สาธารณะที่มีคุณค่า ยั่งยืน และเป็นที่ภาคภูมิใจ
+                ของชุมชน ท้องถิ่น และประเทศ
               </p>
             </div>
           </div>
@@ -179,16 +178,18 @@ export default function AboutPage() {
           {/* Team */}
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">ทีมผู้บริหาร</h2>
-            <p className="text-gray-500 mb-8">ผู้เชี่ยวชาญที่มีประสบการณ์และความมุ่งมั่น</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <p className="text-gray-500 mb-8">ผู้เชี่ยวชาญด้านวิศวกรรม ภูมิสถาปัตย์ และงานสำรวจ</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
               {TEAM.map((t) => (
-                <div key={t.name} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center mx-auto mb-4">
-                    <GraduationCap size={28} className="text-white" />
+                <div key={t.name} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center flex-shrink-0">
+                    <GraduationCap size={24} className="text-white" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 leading-snug mb-1">{t.name}</h3>
-                  <p className="text-sm text-blue-700 font-medium mb-2">{t.role}</p>
-                  <p className="text-xs text-gray-400">{t.exp}</p>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 leading-snug mb-0.5">{t.name}</h3>
+                    <p className="text-sm text-red-700 font-medium mb-1">{t.role}</p>
+                    <p className="text-xs text-gray-400 flex items-center gap-1"><Phone size={10} /> {t.exp}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -196,7 +197,7 @@ export default function AboutPage() {
 
           {/* Certifications */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">มาตรฐานและการรับรอง</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">ความเชี่ยวชาญและจุดแข็ง</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {CERTS.map((c) => (
                 <div key={c} className="flex items-start gap-3 p-4 rounded-xl bg-green-50 border border-green-100">

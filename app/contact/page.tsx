@@ -9,8 +9,8 @@ export default function ContactPage() {
       <div className="pt-16 bg-gradient-to-br from-blue-700 to-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">ติดต่อเรา</span>
-          <h1 className="text-4xl font-bold mb-3">พร้อมรับฟังและให้บริการ</h1>
-          <p className="text-blue-100 text-lg">ทีมผู้เชี่ยวชาญของเราพร้อมตอบทุกคำถามและให้คำปรึกษาด้านวิศวกรรม</p>
+          <h1 className="text-4xl font-bold mb-3">ติดต่อ TRIPIRA</h1>
+          <p className="text-blue-100 text-lg">บริษัท ไตรพีระ จำกัด — พร้อมรับฟังความต้องการด้านวิศวกรรมและภูมิสถาปัตยกรรมทุกรูปแบบ</p>
         </div>
       </div>
 
@@ -21,10 +21,11 @@ export default function ContactPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">ข้อมูลการติดต่อ</h2>
               <div className="space-y-3">
                 {[
-                  { icon: Building2, title: 'บริษัท',     content: 'บริษัท แมพ โปรไฟล์ วิศวกรรม จำกัด', color: 'blue' },
-                  { icon: MapPin,    title: 'ที่อยู่',     content: '123 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110', color: 'blue' },
-                  { icon: Phone,     title: 'โทรศัพท์',   content: '+66 2-123-4567', color: 'green' },
-                  { icon: Mail,      title: 'อีเมล',       content: 'contact@mapprofile.co.th', color: 'purple' },
+                  { icon: Building2, title: 'บริษัท',     content: 'บริษัท ไตรพีระ จำกัด (TRIPIRA CO.,LTD.)', color: 'blue' },
+                  { icon: MapPin,    title: 'ที่อยู่',     content: '46/178 ถ.นวลจันทร์ แขวงนวลจันทร์ เขตบึงกุ่ม กรุงเทพมหานคร 10230', color: 'blue' },
+                  { icon: Phone,     title: 'Project Manager', content: 'พีรพงษ์ ทับนิล · 080-996-1080', color: 'green' },
+                  { icon: Phone,     title: 'Account Manager', content: 'ริณยพัทธ์ แทนสกุล · 084-746-3969', color: 'green' },
+                  { icon: Mail,      title: 'อีเมล',       content: 'contact@tripira.co.th', color: 'purple' },
                   { icon: Clock,     title: 'เวลาทำการ',  content: 'จันทร์ – ศุกร์  08:00 – 17:00 น. (เสาร์ 09:00 – 12:00 น.)', color: 'amber' },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-4 p-4 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -57,12 +58,12 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-              <h3 className="font-semibold text-blue-900 mb-2">สาขาภูมิภาค</h3>
-              <ul className="space-y-2 text-sm text-blue-800">
-                <li className="flex items-center gap-2"><MapPin size={13} /> สาขาเชียงใหม่: 456 ถนนนิมมานเหมินทร์ เชียงใหม่ 50200</li>
-                <li className="flex items-center gap-2"><MapPin size={13} /> สาขาขอนแก่น: 789 ถนนมิตรภาพ ขอนแก่น 40000</li>
-                <li className="flex items-center gap-2"><MapPin size={13} /> สาขาสงขลา: 321 ถนนกาญจนวณิชย์ สงขลา 90000</li>
+            <div className="bg-red-50 rounded-2xl p-6 border border-red-100">
+              <h3 className="font-semibold text-red-900 mb-2">พื้นที่ปฏิบัติงานหลัก</h3>
+              <ul className="space-y-2 text-sm text-red-900">
+                <li className="flex items-start gap-2"><MapPin size={13} className="mt-0.5 flex-shrink-0" /> <span>สำนักงานใหญ่: 46/178 ถ.นวลจันทร์ แขวงนวลจันทร์ เขตบึงกุ่ม กรุงเทพมหานคร 10230</span></li>
+                <li className="flex items-start gap-2"><MapPin size={13} className="mt-0.5 flex-shrink-0" /> <span>พื้นที่โครงการหลัก: ภาคอีสาน (นครพนม มหาสารคาม ร้อยเอ็ด บึงกาฬ หนองคาย)</span></li>
+                <li className="flex items-start gap-2"><MapPin size={13} className="mt-0.5 flex-shrink-0" /> <span>ภาคกลาง (กรุงเทพฯ สิงห์บุรี) และภาคใต้ (ชุมพร)</span></li>
               </ul>
             </div>
           </div>
