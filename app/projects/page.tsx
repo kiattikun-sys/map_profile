@@ -1,9 +1,20 @@
+import type { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 import type { Project } from '@/types/database'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { MapPin, Calendar, ArrowRight, Building2, Zap, Droplets, Ship, TreePine, HardHat, Wrench } from 'lucide-react'
+import { getProjectCoverImage, getTypeGradient } from '@/lib/project-utils'
+
+export const metadata: Metadata = {
+  title: 'โครงการทั้งหมด',
+  description: 'ผลงานภูมิสถาปัตยกรรม วิศวกรรม และ Geomatics Survey โดย TRIPIRA — 200+ โครงการทั่วทุกภาคของประเทศไทย',
+  openGraph: {
+    title: 'โครงการทั้งหมด | TRIPIRA',
+    description: '200+ โครงการภูมิสถาปัตยกรรม วิศวกรรม และสำรวจ ทั่วประเทศไทย',
+  },
+}
 
 const TYPE_CONFIG: Record<string, { color: string; from: string; to: string; icon: React.ElementType }> = {
   'ภูมิสถาปัตย์':   { color: 'emerald', from: 'from-emerald-600', to: 'to-emerald-800', icon: TreePine },
@@ -68,43 +79,52 @@ export default async function ProjectsPage() {
           {projects?.map((project) => {
             const cfg = TYPE_CONFIG[project.project_type ?? ''] ?? { from: 'from-blue-600', to: 'to-blue-800', icon: MapPin }
             const Icon = cfg.icon
+            const coverUrl = getProjectCoverImage(project.images)
+            const gradient = getTypeGradient(project.project_type)
             return (
               <Link
                 key={project.id}
                 href={`/projects/${project.id}`}
-                className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden group border border-gray-100"
+                className="bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group border border-gray-100"
               >
-                <div className={`h-44 bg-gradient-to-br ${cfg.from} ${cfg.to} relative overflow-hidden`}>
-                  {project.images && project.images.length > 0 ? (
+                {/* Cover image */}
+                <div className={`h-48 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
+                  {coverUrl ? (
                     <img
-                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/project-images/${project.images[0]}`}
+                      src={coverUrl}
                       alt={project.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full">
-                      <Icon size={40} className="text-white/30" />
+                      <Icon size={44} className="text-white/25" />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   {project.year && (
-                    <span className="absolute top-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                    <span className="absolute top-3 right-3 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm font-medium">
                       {project.year}
                     </span>
                   )}
                   {project.project_type && (
-                    <span className="absolute bottom-3 left-3 bg-white/20 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-medium">
+                    <span className="absolute bottom-3 left-3 bg-white/20 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full font-semibold border border-white/20">
                       {project.project_type}
+                    </span>
+                  )}
+                  {project.images && project.images.length > 1 && (
+                    <span className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      +{project.images.length - 1} รูป
                     </span>
                   )}
                 </div>
 
                 <div className="p-5">
-                  <h3 className="font-semibold text-gray-900 leading-snug mb-2 group-hover:text-blue-700 transition-colors line-clamp-2">
+                  <h3 className="font-semibold text-gray-900 leading-snug mb-2 group-hover:text-blue-700 transition-colors line-clamp-2 text-[15px]">
                     {project.name}
                   </h3>
                   {project.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">{project.description}</p>
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-3 leading-relaxed">{project.description}</p>
                   )}
                   <div className="flex items-center justify-between text-xs text-gray-400 mt-3 pt-3 border-t border-gray-50">
                     <div className="flex items-center gap-3">
@@ -113,9 +133,11 @@ export default async function ProjectsPage() {
                           <MapPin size={11} /> {project.province}
                         </span>
                       )}
-                      <span className="flex items-center gap-1">
-                        <Calendar size={11} /> {project.year ?? 'N/A'}
-                      </span>
+                      {project.year && (
+                        <span className="flex items-center gap-1">
+                          <Calendar size={11} /> {project.year}
+                        </span>
+                      )}
                     </div>
                     <span className="flex items-center gap-1 text-blue-600 font-medium group-hover:gap-2 transition-all">
                       ดูเพิ่มเติม <ArrowRight size={12} />
@@ -128,9 +150,12 @@ export default async function ProjectsPage() {
         </div>
 
         {(!projects || projects.length === 0) && (
-          <div className="text-center py-20 text-gray-400">
-            <MapPin size={48} className="mx-auto mb-4 opacity-30" />
-            <p className="text-lg">ยังไม่มีโครงการในระบบ</p>
+          <div className="text-center py-24">
+            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-5">
+              <MapPin size={36} className="text-blue-300" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">ยังไม่มีโครงการในระบบ</h3>
+            <p className="text-sm text-gray-400">โครงการจะแสดงที่นี่เมื่อมีข้อมูลในฐานข้อมูล</p>
           </div>
         )}
       </div>

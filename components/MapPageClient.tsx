@@ -28,13 +28,21 @@ export default function MapPageClient() {
     year: '',
     clientId: '',
   })
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(filters.search), 300)
+    return () => clearTimeout(t)
+  }, [filters.search])
+
+  const activeFilters = { ...filters, search: debouncedSearch }
 
   const filteredProjects = projects.filter((p) => {
-    if (filters.search && !p.name.toLowerCase().includes(filters.search.toLowerCase())) return false
-    if (filters.projectType && p.project_type !== filters.projectType) return false
-    if (filters.province && p.province !== filters.province) return false
-    if (filters.year && String(p.year) !== filters.year) return false
-    if (filters.clientId && p.client_id !== filters.clientId) return false
+    if (debouncedSearch && !p.name.toLowerCase().includes(debouncedSearch.toLowerCase())) return false
+    if (activeFilters.projectType && p.project_type !== activeFilters.projectType) return false
+    if (activeFilters.province && p.province !== activeFilters.province) return false
+    if (activeFilters.year && String(p.year) !== activeFilters.year) return false
+    if (activeFilters.clientId && p.client_id !== activeFilters.clientId) return false
     return true
   })
 

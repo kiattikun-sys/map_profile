@@ -1,8 +1,18 @@
+import type { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 import type { Project, Client } from '@/types/database'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { ExternalLink, Users, Globe, Building2 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'ลูกค้าของเรา',
+  description: 'หน่วยงานภาครัฐชั้นนำและบริษัทเอกชนระดับประเทศที่ไว้วางใจในคุณภาพงานของ TRIPIRA — กรมโยธาธิการและผังเมือง Bangchak PTT Lotus’s',
+  openGraph: {
+    title: 'ลูกค้า | TRIPIRA',
+    description: 'พาร์ทเนอร์ชั้นนำที่ไว้วางใจในคุณภาพงานวิศวกรรมและภูมิสถาปัตยกรรม',
+  },
+}
 
 const SECTOR_MAP: Record<string, { label: string; color: string }> = {
   'dpt.go.th':         { label: 'รัฐ — ภูมิสถาปัตย์',  color: 'purple' },

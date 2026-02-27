@@ -1,9 +1,9 @@
 'use client'
 
 import { Project } from '@/types/database'
-import { MapPin, Calendar, Tag, FileText, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { MapPin, Calendar, Tag, FileText, X, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getProjectCoverImage, getProjectImageUrl, getProjectDocUrl, getTypeGradient } from '@/lib/project-utils'
 
 interface ProjectCardProps {
   project: Project
@@ -13,71 +13,65 @@ interface ProjectCardProps {
 export default function ProjectCard({ project, onClose }: ProjectCardProps) {
   const [imgIndex, setImgIndex] = useState(0)
   const images = project.images ?? []
-
-  const getImageUrl = (path: string) => {
-    if (path.startsWith('http')) return path
-    const { data } = supabase.storage.from('project-images').getPublicUrl(path)
-    return data.publicUrl
-  }
-
-  const getDocUrl = (path: string) => {
-    if (path.startsWith('http')) return path
-    const { data } = supabase.storage.from('project-documents').getPublicUrl(path)
-    return data.publicUrl
-  }
+  const coverUrl = getProjectCoverImage(images)
+  const gradient = getTypeGradient(project.project_type)
 
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-md w-full">
-      {images.length > 0 ? (
-        <div className="relative h-48 bg-gray-100">
+      {/* Image / Cover */}
+      <div className="relative h-48 bg-gray-100 overflow-hidden">
+        {coverUrl ? (
           <img
-            src={getImageUrl(images[imgIndex])}
+            src={imgIndex === 0 ? coverUrl : getProjectImageUrl(images[imgIndex])}
             alt={project.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500"
+            loading="lazy"
           />
-          {images.length > 1 && (
-            <>
-              <button
-                onClick={() => setImgIndex((i) => (i - 1 + images.length) % images.length)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                onClick={() => setImgIndex((i) => (i + 1) % images.length)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60"
-              >
-                <ChevronRight size={16} />
-              </button>
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                {images.map((_, i) => (
-                  <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === imgIndex ? 'bg-white' : 'bg-white/50'}`} />
-                ))}
-              </div>
-            </>
-          )}
-          {onClose && (
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+            <MapPin size={36} className="text-white/40" />
+          </div>
+        )}
+
+        {/* type badge */}
+        {project.project_type && (
+          <span className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full font-medium">
+            {project.project_type}
+          </span>
+        )}
+
+        {/* image nav */}
+        {images.length > 1 && (
+          <>
             <button
-              onClick={onClose}
-              className="absolute top-2 right-2 bg-black/40 text-white rounded-full p-1.5 hover:bg-black/60"
+              onClick={() => setImgIndex((i) => (i - 1 + images.length) % images.length)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60 transition-colors"
             >
-              <X size={14} />
+              <ChevronLeft size={16} />
             </button>
-          )}
-        </div>
-      ) : (
-        <div className="h-32 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center relative">
-          <MapPin size={32} className="text-white/60" />
-          {onClose && (
             <button
-              onClick={onClose}
-              className="absolute top-2 right-2 bg-black/30 text-white rounded-full p-1.5 hover:bg-black/50"
+              onClick={() => setImgIndex((i) => (i + 1) % images.length)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-1 hover:bg-black/60 transition-colors"
             >
-              <X size={14} />
+              <ChevronRight size={16} />
             </button>
-          )}
-        </div>
-      )}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              {images.map((_, i) => (
+                <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === imgIndex ? 'bg-white scale-125' : 'bg-white/50'}`} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 bg-black/40 text-white rounded-full p-1.5 hover:bg-black/60 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
 
       <div className="p-4 space-y-3">
         <div>
@@ -87,49 +81,29 @@ export default function ProjectCard({ project, onClose }: ProjectCardProps) {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {project.project_type && (
-            <span className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-              <Tag size={11} /> {project.project_type}
-            </span>
-          )}
+        <div className="flex flex-wrap gap-1.5">
           {project.province && (
-            <span className="flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-              <MapPin size={11} /> {project.province}
+            <span className="flex items-center gap-1 text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full">
+              <MapPin size={10} /> {project.province}
             </span>
           )}
           {project.year && (
-            <span className="flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">
-              <Calendar size={11} /> {project.year}
+            <span className="flex items-center gap-1 text-xs bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full">
+              <Calendar size={10} /> {project.year}
+            </span>
+          )}
+          {project.documents && project.documents.length > 0 && (
+            <span className="flex items-center gap-1 text-xs bg-gray-50 text-gray-600 border border-gray-100 px-2 py-0.5 rounded-full">
+              <FileText size={10} /> {project.documents.length} เอกสาร
             </span>
           )}
         </div>
 
-        {project.documents && project.documents.length > 0 && (
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">เอกสาร</p>
-            <div className="space-y-1">
-              {project.documents.slice(0, 3).map((doc, i) => (
-                <a
-                  key={i}
-                  href={getDocUrl(doc)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  <FileText size={12} />
-                  <span className="truncate">{doc.split('/').pop()}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
         <a
           href={`/projects/${project.id}`}
-          className="block w-full text-center text-sm bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium"
+          className="flex items-center justify-center gap-1.5 w-full text-center text-sm bg-blue-700 text-white py-2.5 rounded-xl hover:bg-blue-800 active:scale-95 transition-all font-medium"
         >
-          ดูรายละเอียดเพิ่มเติม →
+          ดูรายละเอียด <ExternalLink size={13} />
         </a>
       </div>
     </div>

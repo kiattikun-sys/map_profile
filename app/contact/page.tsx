@@ -1,6 +1,16 @@
+import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { MapPin, Phone, Mail, Clock, Facebook, Building2 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'ติดต่อเรา',
+  description: 'ติดต่อบริษัท ไตรพีระ จำกัด — 46/178 ถ.นวลจันทร์ เขตบึงกุ่ม กรุงเทพฯ 10230 โทร 080-996-1080 อีเมล contact@tripira.co.th',
+  openGraph: {
+    title: 'ติดต่อ TRIPIRA | บริษัท ไตรพีระ จำกัด',
+    description: '46/178 ถ.นวลจันทร์ เขตบึงกุ่ม กรุงเทพฯ 10230 — โทร 080-996-1080',
+  },
+}
 
 export default function ContactPage() {
   return (
