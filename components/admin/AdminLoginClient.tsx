@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { loginAction } from '@/app/admin/login/actions'
+import { createBrowserClient } from '@supabase/ssr'
 import { MapPin, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 
 export default function AdminLoginClient() {
@@ -16,14 +16,20 @@ export default function AdminLoginClient() {
     setLoading(true)
     setError('')
 
-    const result = await loginAction(email, password)
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
 
-    if (result?.error) {
-      setError(result.error)
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (authError) {
+      setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง')
       setLoading(false)
-    } else if (result?.success) {
-      window.location.href = '/admin'
+      return
     }
+
+    window.location.href = '/admin'
   }
 
   return (
