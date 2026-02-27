@@ -26,8 +26,7 @@ export default function AdminLoginClient() {
       return
     }
 
-    router.push('/admin')
-    router.refresh()
+    window.location.href = '/admin'
   }
 
   return (
