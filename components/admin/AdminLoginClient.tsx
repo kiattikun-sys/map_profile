@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { loginAction } from '@/app/admin/login/actions'
 import { MapPin, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 
 export default function AdminLoginClient() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -18,15 +16,12 @@ export default function AdminLoginClient() {
     setLoading(true)
     setError('')
 
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+    const result = await loginAction(email, password)
 
-    if (authError) {
-      setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง')
+    if (result?.error) {
+      setError(result.error)
       setLoading(false)
-      return
     }
-
-    window.location.href = '/admin'
   }
 
   return (
