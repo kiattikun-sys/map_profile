@@ -21,6 +21,8 @@ export default function AdminLoginClient() {
     if (result?.error) {
       setError(result.error)
       setLoading(false)
+    } else if (result?.success) {
+      window.location.href = '/admin'
     }
   }
 
