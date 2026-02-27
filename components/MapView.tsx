@@ -7,15 +7,16 @@ import ProjectCard from './ProjectCard'
 
 const TYPE_COLOR_MATCH: mapboxgl.Expression = [
   'match', ['get', 'project_type'],
+  'ภูมิสถาปัตย์',    '#22c55e',
+  'สำรวจ',          '#14b8a6',
   'โยธา',           '#3b82f6',
+  'อาคาร',          '#8b5cf6',
   'สาธารณูปโภค',    '#10b981',
   'ถนน',            '#f59e0b',
-  'อาคาร',          '#8b5cf6',
   'ไฟฟ้า',          '#f97316',
   'ชลประทาน',       '#06b6d4',
   'ท่าเรือ',         '#0ea5e9',
   'ระบบระบายน้ำ',   '#6366f1',
-  'ภูมิสถาปัตย์',    '#22c55e',
   '#1a56db',
 ]
 
