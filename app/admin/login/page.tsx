@@ -1,8 +1,4 @@
-import dynamic from 'next/dynamic'
-
-const AdminLoginClient = dynamic(() => import('@/components/admin/AdminLoginClient'), {
-  ssr: false,
-})
+import AdminLoginClient from '@/components/admin/AdminLoginClient'
 
 export default function AdminLoginPage() {
   return <AdminLoginClient />
