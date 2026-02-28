@@ -101,7 +101,10 @@ export default function ProjectCard({ project, onClose }: ProjectCardProps) {
 
         <a
           href={`/projects/${project.id}`}
-          className="flex items-center justify-center gap-1.5 w-full text-center text-sm bg-blue-700 text-white py-2.5 rounded-xl hover:bg-blue-800 active:scale-95 transition-all font-medium"
+          className="flex items-center justify-center gap-1.5 w-full text-center text-sm text-white py-2.5 rounded-xl active:scale-95 transition-all font-medium"
+          style={{ background: 'var(--gold)', boxShadow: '0 2px 8px rgba(179,155,124,0.30)' }}
+          onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background='var(--gold-dark)'}
+          onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background='var(--gold)'}
         >
           ดูรายละเอียด <ExternalLink size={13} />
         </a>

@@ -12,7 +12,7 @@ const PROJECT_TYPES = [
 const TYPE_COLORS: Record<string, string> = {
   'ภูมิสถาปัตย์': 'bg-emerald-100 text-emerald-700 border-emerald-200',
   'สำรวจ':        'bg-teal-100 text-teal-700 border-teal-200',
-  'โยธา':         'bg-blue-100 text-blue-700 border-blue-200',
+  'โยธา':         'bg-[#F6F2EA] text-[#8C7355] border-[rgba(179,155,124,0.30)]',
   'อาคาร':        'bg-purple-100 text-purple-700 border-purple-200',
   'สาธารณูปโภค':  'bg-green-100 text-green-700 border-green-200',
   'ถนน':          'bg-amber-100 text-amber-700 border-amber-200',
@@ -71,24 +71,35 @@ export default function FilterPanel({ filters, onChange, projectCount, clients =
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  const selectClass = 'w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none cursor-pointer'
+  const selectClass = 'w-full text-sm rounded-xl px-3 py-2 focus:outline-none appearance-none cursor-pointer'
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 space-y-4 min-w-[280px] max-w-[320px]">
+    <div
+      className="rounded-2xl p-4 space-y-4 min-w-[280px] max-w-[320px] backdrop-blur-sm"
+      style={{
+        background: 'rgba(246,242,234,0.96)',
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--shadow-lg)',
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-gray-800 font-semibold">
-          <SlidersHorizontal size={15} className="text-blue-600" />
+        <div className="flex items-center gap-2 font-semibold" style={{ color: 'var(--foreground)' }}>
+          <SlidersHorizontal size={15} style={{ color: 'var(--gold)' }} />
           <span className="text-sm">กรองข้อมูล</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full font-semibold">
+          <span
+            className="text-xs px-2.5 py-0.5 rounded-full font-semibold"
+            style={{ background: 'var(--gold-bg)', color: 'var(--gold-dark)', border: '1px solid var(--gold-border)' }}
+          >
             {projectCount} โครงการ
           </span>
           {hasActiveFilters && (
             <button
               onClick={clearAll}
-              className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors"
+              className="text-xs flex items-center gap-1 transition-colors duration-150"
+              style={{ color: 'var(--muted)' }}
             >
               <X size={12} /> ล้าง
             </button>
@@ -96,21 +107,27 @@ export default function FilterPanel({ filters, onChange, projectCount, clients =
         </div>
       </div>
 
-      {/* Search with keyboard shortcut hint */}
+      {/* Search */}
       <div className="relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--neutral-400)' }} />
         <input
           ref={searchRef}
           type="text"
           placeholder="ค้นหา... (กด /)"
           value={filters.search}
           onChange={(e) => update('search', e.target.value)}
-          className="w-full pl-8 pr-9 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-8 pr-9 py-2 text-sm rounded-xl focus:outline-none"
+          style={{
+            background: 'rgba(237,231,221,0.7)',
+            border: '1px solid var(--border)',
+            color: 'var(--foreground)',
+          }}
         />
         {filters.search && (
           <button
             onClick={() => update('search', '')}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2"
+            style={{ color: 'var(--neutral-400)' }}
           >
             <X size={13} />
           </button>
@@ -119,15 +136,15 @@ export default function FilterPanel({ filters, onChange, projectCount, clients =
 
       {/* Type chips */}
       <div>
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">ประเภทงาน</label>
+        <label className="text-xs font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--neutral-400)' }}>ประเภทงาน</label>
         <div className="flex flex-wrap gap-1.5">
           <button
             onClick={() => update('projectType', '')}
-            className={`text-xs px-2.5 py-1 rounded-full border font-medium transition-all ${
-              !filters.projectType
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600'
-            }`}
+            className="lux-chip"
+            style={!filters.projectType ? {
+              background: 'var(--gold)', borderColor: 'var(--gold)', color: '#fff',
+              boxShadow: '0 2px 8px rgba(179,155,124,0.35)',
+            } : {}}
           >
             ทั้งหมด
           </button>
@@ -135,11 +152,11 @@ export default function FilterPanel({ filters, onChange, projectCount, clients =
             <button
               key={t}
               onClick={() => update('projectType', filters.projectType === t ? '' : t)}
-              className={`text-xs px-2.5 py-1 rounded-full border font-medium transition-all ${
-                filters.projectType === t
-                  ? (TYPE_COLORS[t] ?? 'bg-blue-100 text-blue-700 border-blue-200') + ' ring-1 ring-offset-1 ring-current'
-                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600'
-              }`}
+              className="lux-chip"
+              style={filters.projectType === t ? {
+                background: 'var(--gold)', borderColor: 'var(--gold)', color: '#fff',
+                boxShadow: '0 2px 8px rgba(179,155,124,0.35)',
+              } : {}}
             >
               {t}
             </button>
@@ -149,72 +166,75 @@ export default function FilterPanel({ filters, onChange, projectCount, clients =
 
       {/* Province select */}
       <div>
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">จังหวัด</label>
+        <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--neutral-400)' }}>จังหวัด</label>
         <div className="relative">
           <select
             value={filters.province}
             onChange={(e) => update('province', e.target.value)}
             className={selectClass}
+            style={{ background: 'rgba(237,231,221,0.7)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
           >
             <option value="">ทุกจังหวัด</option>
             {PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
-          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--neutral-400)' }} />
         </div>
       </div>
 
       {/* Year select */}
       <div>
-        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">ปี (พ.ศ.)</label>
+        <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--neutral-400)' }}>ปี (พ.ศ.)</label>
         <div className="relative">
           <select
             value={filters.year}
             onChange={(e) => update('year', e.target.value)}
             className={selectClass}
+            style={{ background: 'rgba(237,231,221,0.7)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
           >
             <option value="">ทุกปี</option>
             {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
-          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--neutral-400)' }} />
         </div>
       </div>
 
       {/* Client select */}
       {clients.length > 0 && (
         <div>
-          <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5 block">ลูกค้า</label>
+          <label className="text-xs font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: 'var(--neutral-400)' }}>ลูกค้า</label>
           <div className="relative">
             <select
               value={filters.clientId}
               onChange={(e) => update('clientId', e.target.value)}
               className={selectClass}
+              style={{ background: 'rgba(237,231,221,0.7)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
             >
               <option value="">ทุกลูกค้า</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--neutral-400)' }} />
           </div>
         </div>
       )}
 
       {/* Active filter summary */}
       {hasActiveFilters && (
-        <div className="pt-1 border-t border-gray-50">
+        <div className="pt-1" style={{ borderTop: '1px solid var(--border)' }}>
           <div className="flex flex-wrap gap-1">
             {filters.projectType && (
-              <span className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--gold-bg)', color: 'var(--gold-dark)', border: '1px solid var(--gold-border)' }}>
                 {filters.projectType}
                 <button onClick={() => update('projectType', '')}><X size={10} /></button>
               </span>
             )}
             {filters.province && (
-              <span className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--gold-bg)', color: 'var(--gold-dark)', border: '1px solid var(--gold-border)' }}>
                 {filters.province}
                 <button onClick={() => update('province', '')}><X size={10} /></button>
               </span>
             )}
             {filters.year && (
-              <span className="inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--gold-bg)', color: 'var(--gold-dark)', border: '1px solid var(--gold-border)' }}>
                 ปี {filters.year}
                 <button onClick={() => update('year', '')}><X size={10} /></button>
               </span>

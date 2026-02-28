@@ -32,8 +32,8 @@ const MapView = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center w-full h-full bg-gray-100">
-        <Loader2 className="animate-spin text-blue-600" size={32} />
+      <div className="flex items-center justify-center w-full h-full" style={{ background: 'var(--background)' }}>
+        <Loader2 className="animate-spin" size={32} style={{ color: 'var(--gold)' }} />
       </div>
     ),
   }
@@ -173,7 +173,7 @@ export default function MapPageClient({ banner }: Props) {
           style={{
             paddingTop: '60px',
             height: `${60 + HERO_H}px`,
-            background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%)',
+            background: '#1C1712',
           }}
         >
           {/* Background image layer */}
@@ -183,24 +183,18 @@ export default function MapPageClient({ banner }: Props) {
               alt=""
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ opacity: 0.18 }}
+              style={{ opacity: 0.22 }}
             />
           )}
-          {/* Gradient overlay */}
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(30,58,138,0.88) 0%, rgba(29,78,216,0.80) 100%)' }} />
-          {/* Grid pattern */}
-          <div className="absolute inset-0 opacity-[0.06]" style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
-            backgroundSize: '32px 32px'
-          }} />
-          <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-blue-600/20 to-transparent" />
+          {/* Subtle dark gradient overlay only */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(28,23,18,0.92) 0%, rgba(28,23,18,0.65) 60%, rgba(28,23,18,0.40) 100%)' }} />
 
           <div className="relative w-full px-6 sm:px-10 lg:px-16 flex items-center justify-between gap-6">
             {/* Left: brand + tagline */}
             <div className="flex items-center gap-4 min-w-0">
               <div className="hidden sm:flex flex-col items-start">
-                <span className="text-[10px] font-semibold tracking-[0.15em] text-blue-300 uppercase">{bannerMessage}</span>
-                <span className="text-[15px] font-bold tracking-[-0.01em] text-white leading-tight">{bannerHeadline}</span>
+                <span className="text-[10px] font-semibold tracking-[0.15em] uppercase" style={{ color: 'var(--gold-light)' }}>{bannerMessage}</span>
+                <span className="text-[16px] font-bold tracking-[-0.01em] text-white leading-tight mt-0.5">{bannerHeadline}</span>
               </div>
             </div>
 
@@ -212,12 +206,12 @@ export default function MapPageClient({ banner }: Props) {
                 { icon: Layers,   val: '1,500M+', label: 'มูลค่างาน' },
               ].map((s) => (
                 <div key={s.label} className="flex items-center gap-2">
-                  <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center">
-                    <s.icon size={13} className="text-blue-200" strokeWidth={2} />
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(179,155,124,0.15)' }}>
+                    <s.icon size={13} style={{ color: 'var(--gold-light)' }} strokeWidth={2} />
                   </div>
                   <div>
                     <p className="text-[14px] font-black leading-none text-white tracking-[-0.02em]">{s.val}</p>
-                    <p className="text-[10px] text-blue-300 mt-0.5 leading-none">{s.label}</p>
+                    <p className="text-[10px] mt-0.5 leading-none" style={{ color: 'var(--gold-light)' }}>{s.label}</p>
                   </div>
                 </div>
               ))}
@@ -227,13 +221,15 @@ export default function MapPageClient({ banner }: Props) {
             <div className="flex items-center gap-2 shrink-0">
               <a
                 href={bannerCtaHref}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/15 border border-white/25 text-white text-[12px] font-semibold rounded-lg hover:bg-white/25 transition-colors duration-150"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[12px] font-semibold rounded-lg transition-all duration-150"
+                style={{ border: '1px solid rgba(179,155,124,0.40)', color: 'var(--gold-light)', background: 'rgba(179,155,124,0.10)' }}
               >
                 {bannerCtaLabel} <ChevronRight size={12} strokeWidth={2.5} />
               </a>
               <button
                 onClick={() => setHeroDismissed(true)}
-                className="w-7 h-7 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white/60 hover:text-white transition-all duration-150"
+                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-150"
+                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
                 aria-label="ปิด"
               >
                 <X size={13} strokeWidth={2} />
@@ -256,19 +252,28 @@ export default function MapPageClient({ banner }: Props) {
 
         {/* Floating stats pill — top right */}
         {!loading && (
-          <div className="absolute right-4 z-20 hidden md:flex items-center gap-3 bg-white/90 backdrop-blur-sm border border-slate-200/80 rounded-2xl px-4 py-2 text-xs" style={{ top: (!heroDismissed && bannerEnabled) ? `${60 + 80 + 8}px` : '76px', boxShadow: 'var(--shadow-md)' }}>
-            <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <Layers size={13} className="text-blue-600" />
-              <span className="text-blue-700 font-bold">{filteredProjects.length}</span>
+          <div
+            className="absolute right-4 z-20 hidden md:flex items-center gap-3 backdrop-blur-sm rounded-2xl px-4 py-2 text-xs"
+            style={{
+              top: (!heroDismissed && bannerEnabled) ? `${60 + 80 + 8}px` : '76px',
+              background: 'rgba(246,242,234,0.92)',
+              border: '1px solid var(--border)',
+              boxShadow: 'var(--shadow-md)',
+              color: 'var(--muted)',
+            }}
+          >
+            <span className="flex items-center gap-1.5 font-medium">
+              <Layers size={13} style={{ color: 'var(--gold)' }} />
+              <span className="font-bold" style={{ color: 'var(--foreground)' }}>{filteredProjects.length}</span>
               <span>/ {projects.length} โครงการ</span>
             </span>
-            <div className="w-px h-4 bg-gray-200" />
-            <span className="flex items-center gap-1.5 text-gray-600">
-              <MapPin size={12} className="text-emerald-600" />
-              <span className="font-medium">{provinceCount}</span> จังหวัด
+            <div className="w-px h-4" style={{ background: 'var(--border)' }} />
+            <span className="flex items-center gap-1.5">
+              <MapPin size={12} style={{ color: 'var(--gold)' }} />
+              <span className="font-medium" style={{ color: 'var(--foreground)' }}>{provinceCount}</span> จังหวัด
             </span>
-            <div className="w-px h-4 bg-gray-200" />
-            <span className="text-gray-500">{Object.keys(typeCount).length} ประเภท</span>
+            <div className="w-px h-4" style={{ background: 'var(--border)' }} />
+            <span>{Object.keys(typeCount).length} ประเภท</span>
           </div>
         )}
 
@@ -295,13 +300,13 @@ export default function MapPageClient({ banner }: Props) {
           )}
 
           {loading ? (
-            <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-50 to-gray-100">
+            <div className="flex items-center justify-center w-full h-full" style={{ background: 'var(--background)' }}>
               <div className="text-center">
-                <div className="w-16 h-16 bg-white rounded-2xl shadow-md flex items-center justify-center mx-auto mb-4">
-                  <Loader2 className="animate-spin text-blue-600" size={28} />
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--surface)', boxShadow: 'var(--shadow-md)' }}>
+                  <Loader2 className="animate-spin" size={28} style={{ color: 'var(--gold)' }} />
                 </div>
-                <p className="text-gray-600 text-sm font-medium">กำลังโหลดข้อมูลโครงการ...</p>
-                <p className="text-gray-400 text-xs mt-1">TRIPIRA Map Profile</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--muted)' }}>กำลังโหลดข้อมูลโครงการ...</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--neutral-400)' }}>TRIPIRA Map Profile</p>
               </div>
             </div>
           ) : (

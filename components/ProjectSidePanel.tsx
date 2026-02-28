@@ -97,7 +97,7 @@ export default function ProjectSidePanel({
           <motion.aside
             key="side-panel"
             className={[
-              'fixed z-40 bg-white shadow-2xl flex flex-col overflow-hidden',
+              'fixed z-40 flex flex-col overflow-hidden',
               // Desktop: left panel — starts below Navbar (60px)
               'md:top-[60px] md:left-0 md:bottom-0 md:w-[440px]',
               // Mobile: bottom sheet
@@ -111,6 +111,9 @@ export default function ProjectSidePanel({
               {
                 '--panel-x': '-100%',
                 '--panel-y': '0%',
+                background: 'var(--surface)',
+                boxShadow: 'var(--shadow-xl)',
+                borderRight: '1px solid var(--border)',
               } as React.CSSProperties
             }
           >
@@ -185,24 +188,24 @@ export default function ProjectSidePanel({
             <div className="flex-1 overflow-y-auto">
               {/* Project info */}
               <div className="p-5 pb-3">
-                <h2 className="font-bold text-slate-900 text-[17px] leading-snug tracking-[-0.01em] mb-3">
+                <h2 className="font-bold text-[18px] leading-snug tracking-[-0.02em] mb-3" style={{ color: 'var(--foreground)' }}>
                   {project.name}
                 </h2>
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {project.project_type && (
-                    <span className="flex items-center gap-1 text-[11px] bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-full font-medium">
+                    <span className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-semibold" style={{ background: 'var(--gold-bg)', color: 'var(--gold-dark)', border: '1px solid var(--gold-border)' }}>
                       <Tag size={9} strokeWidth={2} /> {project.project_type}
                     </span>
                   )}
                   {project.province && (
-                    <span className="flex items-center gap-1 text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'var(--neutral-200)', color: 'var(--neutral-700)', border: '1px solid var(--border)' }}>
                       <MapPin size={9} strokeWidth={2} /> {project.province}
                     </span>
                   )}
                   {project.year && (
-                    <span className="flex items-center gap-1 text-[11px] bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'var(--neutral-200)', color: 'var(--neutral-700)', border: '1px solid var(--border)' }}>
                       <Calendar size={9} strokeWidth={2} /> {project.year}
                     </span>
                   )}
@@ -210,7 +213,7 @@ export default function ProjectSidePanel({
 
                 {/* Description */}
                 {project.description && (
-                  <p className="text-[13px] text-slate-500 leading-relaxed line-clamp-3 mb-4">
+                  <p className="text-[13px] leading-relaxed line-clamp-3 mb-4" style={{ color: 'var(--muted)' }}>
                     {project.description}
                   </p>
                 )}
@@ -218,56 +221,61 @@ export default function ProjectSidePanel({
                 {/* CTA */}
                 <a
                   href={`/projects/${project.id}`}
-                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-[13px] font-semibold rounded-xl transition-colors duration-200"
-                  style={{ boxShadow: '0 2px 8px rgba(30,58,138,0.25)' }}
+                  className="flex items-center justify-center gap-2 w-full py-2.5 text-white text-[13px] font-semibold rounded-xl transition-all duration-200"
+                  style={{ background: 'var(--gold)', boxShadow: '0 2px 10px rgba(179,155,124,0.35)' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold-dark)' }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'var(--gold)' }}
                 >
                   ดูรายละเอียดเต็มหน้า <ExternalLink size={13} strokeWidth={2.5} />
                 </a>
               </div>
 
               {/* Divider */}
-              <div className="mx-5 border-t border-slate-100" />
+              <div className="mx-5" style={{ borderTop: '1px solid var(--border)' }} />
 
               {/* Layer Control Section */}
               <div className="p-5 pt-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <Layers size={14} className="text-slate-400" strokeWidth={2} />
-                  <h3 className="text-[12px] font-bold text-slate-700 uppercase tracking-[0.08em]">
+                  <Layers size={14} style={{ color: 'var(--gold)' }} strokeWidth={2} />
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--muted)' }}>
                     ชั้นข้อมูลโครงการ
                   </h3>
                 </div>
 
                 {/* 3D Model button */}
-                <div className={`rounded-xl border p-3.5 mb-3 transition-colors ${
-                  projectModel ? 'border-indigo-200 bg-indigo-50/60' : 'border-slate-100 bg-slate-50/30'
-                }`}>
+                <div
+                  className="rounded-xl p-3.5 mb-3 transition-all duration-200"
+                  style={{
+                    background: projectModel ? 'var(--gold-bg)' : 'rgba(30,30,30,0.03)',
+                    border: projectModel ? '1px solid var(--gold-border)' : '1px solid var(--border)',
+                  }}
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        projectModel ? 'bg-indigo-100' : 'bg-slate-100'
-                      }`}>
-                        <Box size={14} className={projectModel ? 'text-indigo-600' : 'text-slate-400'} />
+                      <div
+                        className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: projectModel ? 'var(--gold-bg)' : 'var(--neutral-200)', border: '1px solid var(--border)' }}
+                      >
+                        <Box size={14} style={{ color: projectModel ? 'var(--gold)' : 'var(--neutral-400)' }} />
                       </div>
                       <div>
-                        <p className={`text-[13px] font-semibold leading-none ${
-                          projectModel ? 'text-slate-800' : 'text-slate-400'
-                        }`}>โมเดล 3D</p>
+                        <p className="text-[13px] font-semibold leading-none" style={{ color: projectModel ? 'var(--foreground)' : 'var(--neutral-400)' }}>โมเดล 3D</p>
                         {!projectModel && !modelLoading && (
-                          <p className="text-[11px] text-slate-400 mt-0.5">ยังไม่มีโมเดล</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: 'var(--neutral-400)' }}>ยังไม่มีโมเดล</p>
                         )}
                         {modelLoading && (
-                          <p className="text-[11px] text-slate-400 mt-0.5">กำลังตรวจสอบ...</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: 'var(--neutral-400)' }}>กำลังตรวจสอบ...</p>
                         )}
                       </div>
                     </div>
                     <button
                       disabled={!projectModel || modelLoading}
                       onClick={() => projectModel && onView3D?.(projectModel)}
-                      className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors ${
-                        projectModel && !modelLoading
-                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                          : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                      }`}
+                      className="px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all duration-150"
+                      style={projectModel && !modelLoading
+                        ? { background: 'var(--gold)', color: '#fff', boxShadow: '0 2px 6px rgba(179,155,124,0.35)' }
+                        : { background: 'var(--neutral-200)', color: 'var(--neutral-400)', cursor: 'not-allowed' }
+                      }
                     >
                       View 3D
                     </button>
@@ -275,27 +283,30 @@ export default function ProjectSidePanel({
                 </div>
 
                 {/* Overlay toggle row */}
-                <div className={`rounded-xl border p-3.5 transition-colors ${
-                  hasOverlay ? 'border-slate-200 bg-slate-50/60' : 'border-slate-100 bg-slate-50/30'
-                }`}>
+                <div
+                  className="rounded-xl p-3.5 transition-all duration-200"
+                  style={{
+                    background: 'rgba(30,30,30,0.03)',
+                    border: '1px solid var(--border)',
+                  }}
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        hasOverlay
-                          ? activeLayers.overlay ? 'bg-purple-100' : 'bg-slate-100'
-                          : 'bg-slate-100'
-                      }`}>
+                      <div
+                        className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: activeLayers.overlay && hasOverlay ? 'var(--gold-bg)' : 'var(--neutral-200)', border: '1px solid var(--border)' }}
+                      >
                         {activeLayers.overlay && hasOverlay
-                          ? <Eye size={14} className="text-purple-600" />
-                          : <EyeOff size={14} className="text-slate-400" />
+                          ? <Eye size={14} style={{ color: 'var(--gold)' }} />
+                          : <EyeOff size={14} style={{ color: 'var(--neutral-400)' }} />
                         }
                       </div>
                       <div>
-                        <p className={`text-[13px] font-semibold leading-none ${hasOverlay ? 'text-slate-800' : 'text-slate-400'}`}>
+                        <p className="text-[13px] font-semibold leading-none" style={{ color: hasOverlay ? 'var(--foreground)' : 'var(--neutral-400)' }}>
                           ผังโครงการ
                         </p>
                         {!hasOverlay && (
-                          <p className="text-[11px] text-slate-400 mt-0.5">ไม่มีผังโครงการ</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: 'var(--neutral-400)' }}>ไม่มีผังโครงการ</p>
                         )}
                       </div>
                     </div>
@@ -304,14 +315,17 @@ export default function ProjectSidePanel({
                     <button
                       disabled={!hasOverlay}
                       onClick={() => onToggleOverlay(!activeLayers.overlay)}
-                      className={`relative w-10 h-5.5 rounded-full transition-colors duration-200 flex-shrink-0 ${
-                        !hasOverlay
-                          ? 'bg-slate-200 cursor-not-allowed'
+                      className="relative rounded-full transition-colors duration-200 flex-shrink-0"
+                      style={{
+                        height: '22px',
+                        width: '40px',
+                        background: !hasOverlay
+                          ? 'var(--neutral-300)'
                           : activeLayers.overlay
-                            ? 'bg-purple-500'
-                            : 'bg-slate-300'
-                      }`}
-                      style={{ height: '22px', width: '40px' }}
+                            ? 'var(--gold)'
+                            : 'var(--neutral-300)',
+                        cursor: !hasOverlay ? 'not-allowed' : 'pointer',
+                      }}
                       aria-label="toggle overlay"
                     >
                       <span
@@ -324,10 +338,10 @@ export default function ProjectSidePanel({
 
                   {/* Opacity slider — only when overlay is enabled and has overlay */}
                   {hasOverlay && activeLayers.overlay && (
-                    <div className="mt-3 pt-3 border-t border-slate-200/60">
+                    <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[11px] text-slate-500">ความโปร่งใส</span>
-                        <span className="text-[11px] font-mono font-semibold text-slate-700">
+                        <span className="text-[11px]" style={{ color: 'var(--muted)' }}>ความโปร่งใส</span>
+                        <span className="text-[11px] font-mono font-semibold" style={{ color: 'var(--foreground)' }}>
                           {Math.round(overlayOpacity * 100)}%
                         </span>
                       </div>
@@ -338,7 +352,8 @@ export default function ProjectSidePanel({
                         step={0.01}
                         value={overlayOpacity}
                         onChange={(e) => onOpacityChange(parseFloat(e.target.value))}
-                        className="w-full h-1.5 rounded-full accent-purple-600 cursor-pointer"
+                        className="w-full h-1.5 rounded-full cursor-pointer"
+                        style={{ accentColor: 'var(--gold)' }}
                       />
                     </div>
                   )}

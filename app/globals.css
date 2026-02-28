@@ -2,50 +2,46 @@
 @import "mapbox-gl/dist/mapbox-gl.css";
 
 /* ============================================================
-   TRIPIRA BRAND TOKEN SYSTEM — 2026 Corporate Premium
+   TRIPIRA BRAND TOKEN SYSTEM — Luxury Muted Gold Edition
    ============================================================ */
 :root {
-  /* Background & Foreground */
-  --background: #f8f9fb;
-  --foreground: #0f172a;
-  --surface: #ffffff;
+  /* Background & Surface */
+  --background: #EDE7DD;
+  --surface:    #F6F2EA;
+  --foreground: #1E1E1E;
+  --muted:      #6E6A64;
+  --border:     rgba(30,30,30,0.08);
 
-  /* Primary — Corporate Blue */
-  --primary-50:  #eff6ff;
-  --primary-100: #dbeafe;
-  --primary-200: #bfdbfe;
-  --primary-300: #93c5fd;
-  --primary-400: #60a5fa;
-  --primary-500: #3b82f6;
+  /* Gold accent */
+  --gold:        #B39B7C;
+  --gold-light:  #CDB99A;
+  --gold-dark:   #8C7355;
+  --gold-bg:     rgba(179,155,124,0.10);
+  --gold-border: rgba(179,155,124,0.30);
+
+  /* Neutral warm scale */
+  --neutral-50:  #FAF8F5;
+  --neutral-100: #F6F2EA;
+  --neutral-200: #EDE7DD;
+  --neutral-300: #DDD5C8;
+  --neutral-400: #B8ADA0;
+  --neutral-500: #8C8278;
+  --neutral-600: #6E6A64;
+  --neutral-700: #4A4540;
+  --neutral-800: #2E2A25;
+  --neutral-900: #1E1E1E;
+
+  /* Keep primary for map-critical elements only */
   --primary-600: #1d4ed8;
   --primary-700: #1e3a8a;
-  --primary-800: #1e3070;
-  --primary-900: #172554;
 
-  /* Neutral scale */
-  --neutral-50:  #f8f9fb;
-  --neutral-100: #f1f3f7;
-  --neutral-200: #e4e8f0;
-  --neutral-300: #d0d6e2;
-  --neutral-400: #9aa5b8;
-  --neutral-500: #64748b;
-  --neutral-600: #475569;
-  --neutral-700: #334155;
-  --neutral-800: #1e293b;
-  --neutral-900: #0f172a;
-
-  /* Accent — Warm Gold for badges/highlights */
-  --accent-400: #fbbf24;
-  --accent-500: #f59e0b;
-  --accent-600: #d97706;
-
-  /* Elevation shadows (layered, premium) */
-  --shadow-xs:  0 1px 2px 0 rgba(15,23,42,0.04);
-  --shadow-sm:  0 1px 3px 0 rgba(15,23,42,0.06), 0 1px 2px -1px rgba(15,23,42,0.04);
-  --shadow-md:  0 4px 6px -1px rgba(15,23,42,0.07), 0 2px 4px -2px rgba(15,23,42,0.05);
-  --shadow-lg:  0 10px 24px -3px rgba(15,23,42,0.09), 0 4px 8px -4px rgba(15,23,42,0.06);
-  --shadow-xl:  0 20px 40px -6px rgba(15,23,42,0.12), 0 8px 16px -6px rgba(15,23,42,0.07);
-  --shadow-2xl: 0 32px 64px -8px rgba(15,23,42,0.16), 0 12px 24px -8px rgba(15,23,42,0.08);
+  /* Elevation shadows — warm, soft */
+  --shadow-xs:  0 1px 2px 0 rgba(30,20,10,0.04);
+  --shadow-sm:  0 1px 4px 0 rgba(30,20,10,0.06), 0 1px 2px -1px rgba(30,20,10,0.04);
+  --shadow-md:  0 4px 12px -1px rgba(30,20,10,0.07), 0 2px 4px -2px rgba(30,20,10,0.04);
+  --shadow-lg:  0 12px 28px -3px rgba(30,20,10,0.09), 0 4px 8px -4px rgba(30,20,10,0.05);
+  --shadow-xl:  0 20px 40px -6px rgba(30,20,10,0.11), 0 8px 16px -6px rgba(30,20,10,0.06);
+  --shadow-2xl: 0 32px 64px -8px rgba(30,20,10,0.14), 0 12px 24px -8px rgba(30,20,10,0.07);
 
   /* Radius system */
   --radius-sm:  6px;
@@ -56,11 +52,11 @@
   --radius-full: 9999px;
 
   /* Motion */
-  --ease-premium: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-premium:  cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 0.18s;
-  --duration-base: 0.32s;
-  --duration-slow: 0.52s;
+  --duration-fast: 0.15s;
+  --duration-base: 0.28s;
+  --duration-slow: 0.48s;
 }
 
 @theme inline {
@@ -88,8 +84,8 @@ body {
 }
 
 ::selection {
-  background: var(--primary-200);
-  color: var(--primary-700);
+  background: var(--gold-bg);
+  color: var(--gold-dark);
 }
 
 /* ============================================================
@@ -98,11 +94,11 @@ body {
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--neutral-100); }
 ::-webkit-scrollbar-thumb {
-  background: var(--neutral-300);
+  background: var(--neutral-400);
   border-radius: var(--radius-full);
   transition: background var(--duration-base);
 }
-::-webkit-scrollbar-thumb:hover { background: var(--neutral-400); }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
 /* ============================================================
    UTILITY CLASSES — Brand tokens as Tailwind supplements
@@ -110,7 +106,7 @@ body {
 .brand-surface {
   background: var(--surface);
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--neutral-200);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
 }
 
@@ -121,16 +117,15 @@ body {
 }
 .brand-surface-hover:hover {
   box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-  border-color: var(--neutral-300);
+  transform: translateY(-4px);
+  border-color: var(--gold-border);
 }
 
 .brand-hero-gradient {
-  background: linear-gradient(135deg,
-    #0f2d6e 0%,
-    #1a3f8f 30%,
-    #1d4ed8 65%,
-    #1e40af 100%
+  background: linear-gradient(160deg,
+    #1a1612 0%,
+    #2C2319 40%,
+    #3A2E20 100%
   );
 }
 
@@ -142,18 +137,57 @@ body {
 .brand-label {
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--primary-400);
+  color: var(--gold);
 }
 
 .brand-divider {
   width: 2.5rem;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary-600), var(--primary-400));
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
   border-radius: var(--radius-full);
   margin-top: 0.75rem;
   margin-bottom: 1.5rem;
+}
+
+/* Luxury card — warm surface */
+.lux-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--duration-base) var(--ease-premium),
+              transform var(--duration-base) var(--ease-premium),
+              border-color var(--duration-base) var(--ease-premium);
+}
+.lux-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--gold-border);
+}
+
+/* Luxury chip — muted gold selected */
+.lux-chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  transition: all var(--duration-fast) var(--ease-premium);
+  cursor: pointer;
+}
+.lux-chip:hover {
+  border-color: var(--gold-border);
+  color: var(--gold-dark);
+}
+.lux-chip.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(179,155,124,0.35);
 }
 
 /* ============================================================
