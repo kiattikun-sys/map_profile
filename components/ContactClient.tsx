@@ -24,137 +24,166 @@ export default function ContactClient() {
   ]
 
   const colorMap: Record<string, string> = {
-    blue:   'bg-blue-100 text-blue-700',
-    green:  'bg-green-100 text-green-700',
-    purple: 'bg-purple-100 text-purple-700',
-    amber:  'bg-amber-100 text-amber-700',
+    blue:   'bg-blue-50 text-blue-700',
+    green:  'bg-emerald-50 text-emerald-700',
+    purple: 'bg-violet-50 text-violet-700',
+    amber:  'bg-amber-50 text-amber-600',
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Left: contact info */}
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">ข้อมูลการติดต่อ</h2>
-            <div className="space-y-3">
+    <div className="flex-1" style={{ background: 'var(--background)' }}>
+
+      {/* Map embed full-width */}
+      <div className="w-full overflow-hidden" style={{ height: '320px' }}>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.8234!2d100.6627!3d13.8052!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x311d616e5d5e37bf%3A0x7e8b5c0a2b6e3c4f!2z46-178%20%E0%B8%96%E0%B8%99%E0%B8%99%E0%B8%99%E0%B8%A7%E0%B8%A5%E0%B8%88%E0%B8%B1%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C%20%E0%B9%81%E0%B8%82%E0%B8%A7%E0%B8%87%E0%B8%99%E0%B8%A7%E0%B8%A5%E0%B8%88%E0%B8%B1%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C%20%E0%B9%80%E0%B8%82%E0%B8%95%E0%B8%9A%E0%B8%B6%E0%B8%87%E0%B8%81%E0%B8%B8%E0%B9%88%E0%B8%A1%20%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B8%9E%E0%B8%A1%E0%B8%AB%E0%B8%B2%E0%B8%99%E0%B8%84%E0%B8%A3%2010230!5e0!3m2!1sth!2sth!4v1700000000000"
+          width="100%"
+          height="320"
+          style={{ border: 0, display: 'block' }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="TRIPIRA Office Location"
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+
+          {/* Left col — 2/5 */}
+          <div className="lg:col-span-2 space-y-5">
+            {/* Section header */}
+            <div>
+              <h2 className="text-[22px] font-bold text-slate-900 tracking-[-0.02em] mb-1">ข้อมูลติดต่อ</h2>
+              <div className="brand-divider" />
+            </div>
+
+            {/* Contact cards */}
+            <div className="space-y-2.5">
               {CONTACT_ITEMS.map((item) => (
                 <div
                   key={item.key}
-                  className="flex gap-4 p-4 bg-white rounded-xl shadow-sm border border-gray-100 group hover:border-blue-200 transition-colors"
+                  className="flex gap-3.5 p-4 bg-white rounded-2xl border border-slate-200/60 group hover:border-blue-200 transition-all duration-200"
+                  style={{ boxShadow: 'var(--shadow-sm)' }}
                 >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${colorMap[item.color]}`}>
-                    <item.icon size={18} />
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${colorMap[item.color]}`}>
+                    <item.icon size={16} strokeWidth={2} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{item.title}</p>
-                    <p className="text-gray-800 font-medium mt-0.5 leading-snug">{item.content}</p>
+                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.08em]">{item.title}</p>
+                    <p className="text-[13px] text-slate-800 font-medium mt-0.5 leading-snug">{item.content}</p>
                   </div>
                   {item.copyVal && (
                     <button
                       onClick={() => copyText(item.key, item.copyVal!)}
-                      className="flex-shrink-0 self-center p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"
+                      className="flex-shrink-0 self-center p-1.5 rounded-lg text-slate-300 hover:text-blue-600 hover:bg-blue-50 transition-all opacity-0 group-hover:opacity-100"
                       title="คัดลอก"
                     >
                       {copied === item.key
-                        ? <Check size={14} className="text-green-500" />
-                        : <Copy size={14} />
+                        ? <Check size={13} className="text-emerald-500" />
+                        : <Copy size={13} />
                       }
                     </button>
                   )}
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* Social */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <h3 className="font-semibold text-gray-900 mb-4">ติดตามเราได้ที่</h3>
-            <div className="flex gap-3">
-              <a
-                href="#"
-                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium"
-              >
-                <Facebook size={16} /> Facebook
-              </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 px-4 py-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors text-sm font-medium"
-              >
-                <span className="font-bold text-xs">LINE</span> LINE Official
-              </a>
-            </div>
-          </div>
-
-          {/* Regions */}
-          <div className="bg-red-50 rounded-2xl p-6 border border-red-100">
-            <h3 className="font-semibold text-red-900 mb-3">พื้นที่ปฏิบัติงานหลัก</h3>
-            <ul className="space-y-2 text-sm text-red-900">
-              <li className="flex items-start gap-2">
-                <MapPin size={13} className="mt-0.5 flex-shrink-0" />
-                <span>สำนักงานใหญ่: 46/178 ถ.นวลจันทร์ แขวงนวลจันทร์ เขตบึงกุ่ม กรุงเทพมหานคร 10230</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin size={13} className="mt-0.5 flex-shrink-0" />
-                <span>ภาคอีสาน: นครพนม มหาสารคาม ร้อยเอ็ด บึงกาฬ หนองคาย</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin size={13} className="mt-0.5 flex-shrink-0" />
-                <span>ภาคกลาง: กรุงเทพฯ สิงห์บุรี และภาคใต้: ชุมพร</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Right: contact form */}
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">ส่งข้อความถึงเรา</h2>
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">ชื่อ</label>
-                <input type="text" placeholder="ชื่อของคุณ"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">นามสกุล</label>
-                <input type="text" placeholder="นามสกุลของคุณ"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+            {/* Social */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/60" style={{ boxShadow: 'var(--shadow-sm)' }}>
+              <h3 className="text-[13px] font-semibold text-slate-700 mb-3">ติดตามเราได้ที่</h3>
+              <div className="flex gap-2.5">
+                <a href="#" className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition-colors duration-150 text-[13px] font-semibold">
+                  <Facebook size={14} strokeWidth={2} /> Facebook
+                </a>
+                <a href="#" className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors duration-150 text-[13px] font-semibold">
+                  <span className="font-black text-[11px]">LINE</span> Official
+                </a>
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">อีเมล</label>
-              <input type="email" placeholder="example@email.com"
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+
+            {/* Coverage areas */}
+            <div className="bg-blue-50 rounded-2xl p-5 border border-blue-100">
+              <h3 className="text-[13px] font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                <MapPin size={14} strokeWidth={2} className="text-blue-700" />
+                พื้นที่ปฏิบัติงานหลัก
+              </h3>
+              <ul className="space-y-2">
+                {[
+                  { label: 'สำนักงานใหญ่', desc: '46/178 ถ.นวลจันทร์ เขตบึงกุ่ม กรุงเทพฯ' },
+                  { label: 'ภาคอีสาน', desc: 'นครพนม มหาสารคาม ร้อยเอ็ด บึงกาฬ หนองคาย' },
+                  { label: 'ภาคใต้-กลาง', desc: 'ชุมพร สิงห์บุรี และปริมณฑลกรุงเทพฯ' },
+                ].map((r) => (
+                  <li key={r.label} className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0 mt-1.5" />
+                    <div>
+                      <span className="text-[12px] font-semibold text-blue-900">{r.label}: </span>
+                      <span className="text-[12px] text-blue-700">{r.desc}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">เบอร์โทรศัพท์</label>
-              <input type="tel" placeholder="08X-XXX-XXXX"
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+          </div>
+
+          {/* Right col — 3/5 — contact form */}
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-2xl p-8 border border-slate-200/60" style={{ boxShadow: 'var(--shadow-md)' }}>
+              <h2 className="text-[20px] font-bold text-slate-900 tracking-[-0.02em] mb-1">ส่งข้อความถึงเรา</h2>
+              <div className="brand-divider mb-6" />
+              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[12.5px] font-semibold text-slate-600 mb-1.5">ชื่อ</label>
+                    <input type="text" placeholder="ชื่อของคุณ"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-600/25 focus:border-blue-400 bg-slate-50 transition-all duration-150"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[12.5px] font-semibold text-slate-600 mb-1.5">นามสกุล</label>
+                    <input type="text" placeholder="นามสกุลของคุณ"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-600/25 focus:border-blue-400 bg-slate-50 transition-all duration-150"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[12.5px] font-semibold text-slate-600 mb-1.5">อีเมล</label>
+                    <input type="email" placeholder="example@email.com"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-600/25 focus:border-blue-400 bg-slate-50 transition-all duration-150"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[12.5px] font-semibold text-slate-600 mb-1.5">เบอร์โทรศัพท์</label>
+                    <input type="tel" placeholder="08X-XXX-XXXX"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-600/25 focus:border-blue-400 bg-slate-50 transition-all duration-150"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[12.5px] font-semibold text-slate-600 mb-1.5">หัวข้อ</label>
+                  <input type="text" placeholder="หัวข้อที่ต้องการติดต่อ"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-600/25 focus:border-blue-400 bg-slate-50 transition-all duration-150"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[12.5px] font-semibold text-slate-600 mb-1.5">ข้อความ</label>
+                  <textarea rows={5} placeholder="รายละเอียดที่ต้องการติดต่อ..."
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-blue-600/25 focus:border-blue-400 bg-slate-50 transition-all duration-150 resize-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-blue-800 text-white rounded-xl hover:bg-blue-900 active:scale-[0.99] transition-all duration-150 font-semibold text-[13.5px] tracking-[-0.01em]"
+                  style={{ boxShadow: '0 4px 16px rgba(30,58,138,0.25)' }}
+                >
+                  ส่งข้อความ
+                </button>
+                <p className="text-[11.5px] text-slate-400 text-center">ทีมของเราจะตอบกลับภายใน  24 ชั่วโมงในวันทำการ</p>
+              </form>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">หัวข้อ</label>
-              <input type="text" placeholder="หัวข้อที่ต้องการติดต่อ"
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">ข้อความ</label>
-              <textarea rows={5} placeholder="รายละเอียดที่ต้องการติดต่อ..."
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-blue-700 text-white rounded-xl hover:bg-blue-800 active:scale-[0.99] transition-all font-medium text-sm"
-            >
-              ส่งข้อความ
-            </button>
-          </form>
+          </div>
+
         </div>
       </div>
     </div>

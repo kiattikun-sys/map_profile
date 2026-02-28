@@ -6,7 +6,7 @@ import { Project, Client, FilterState } from '@/types/database'
 import { supabase } from '@/lib/supabase'
 import FilterPanel from './FilterPanel'
 import Navbar from './Navbar'
-import { Loader2, Layers, MapPin } from 'lucide-react'
+import { Loader2, Layers, MapPin, Building2, ChevronRight, X } from 'lucide-react'
 
 const MapView = dynamic(() => import('./MapView'), {
   ssr: false,
@@ -21,6 +21,7 @@ export default function MapPageClient() {
   const [projects, setProjects] = useState<Project[]>([])
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
+  const [heroDismissed, setHeroDismissed] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     projectType: '',
@@ -65,12 +66,80 @@ export default function MapPageClient() {
   }, {})
   const provinceCount = new Set(projects.map((p) => p.province).filter(Boolean)).size
 
+  const HERO_H = heroDismissed ? 0 : 80
+
   return (
     <div className="flex flex-col h-screen">
       <Navbar />
-      <div className="flex flex-1 overflow-hidden pt-16">
+
+      {/* Homepage hero banner */}
+      {!heroDismissed && (
+        <div
+          className="relative overflow-hidden text-white flex items-center shrink-0"
+          style={{
+            paddingTop: '60px',
+            height: `${60 + HERO_H}px`,
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%)'
+          }}
+        >
+          {/* Grid pattern */}
+          <div className="absolute inset-0 opacity-[0.06]" style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
+            backgroundSize: '32px 32px'
+          }} />
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-blue-600/20 to-transparent" />
+
+          <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-6">
+            {/* Left: brand + tagline */}
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="hidden sm:flex flex-col items-start">
+                <span className="text-[10px] font-semibold tracking-[0.15em] text-blue-300 uppercase">แผนที่โครงการ — TRIPIRA</span>
+                <span className="text-[15px] font-bold tracking-[-0.01em] text-white leading-tight">ออกแบบภูมิสถาปัตยกรรมและวิศวกรรมระดับชาติ</span>
+              </div>
+            </div>
+
+            {/* Center: quick stats */}
+            <div className="hidden md:flex items-center gap-6">
+              {[
+                { icon: Building2, val: `${projects.length || '200'}+`, label: 'โครงการ' },
+                { icon: MapPin,    val: `${new Set(projects.map(p=>p.province).filter(Boolean)).size || '30'}+`, label: 'จังหวัด' },
+                { icon: Layers,   val: '1,500M+', label: 'มูลค่างาน' },
+              ].map((s) => (
+                <div key={s.label} className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-white/10 rounded-lg flex items-center justify-center">
+                    <s.icon size={13} className="text-blue-200" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-black leading-none text-white tracking-[-0.02em]">{s.val}</p>
+                    <p className="text-[10px] text-blue-300 mt-0.5 leading-none">{s.label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right: CTA + dismiss */}
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href="/about"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/15 border border-white/25 text-white text-[12px] font-semibold rounded-lg hover:bg-white/25 transition-colors duration-150"
+              >
+                เกี่ยวกับเรา <ChevronRight size={12} strokeWidth={2.5} />
+              </a>
+              <button
+                onClick={() => setHeroDismissed(true)}
+                className="w-7 h-7 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white/60 hover:text-white transition-all duration-150"
+                aria-label="ปิด"
+              >
+                <X size={13} strokeWidth={2} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-1 overflow-hidden">
         {/* Filter panel — desktop */}
-        <div className="absolute top-20 left-4 z-20 hidden md:block">
+        <div className="absolute left-4 z-20 hidden md:block" style={{ top: heroDismissed ? '76px' : `${60 + 80 + 8}px` }}>
           <FilterPanel
             filters={filters}
             onChange={setFilters}
@@ -81,7 +150,7 @@ export default function MapPageClient() {
 
         {/* Floating stats pill — top right */}
         {!loading && (
-          <div className="absolute top-[4.75rem] right-4 z-20 hidden md:flex items-center gap-3 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl px-4 py-2 shadow-md text-xs">
+          <div className="absolute right-4 z-20 hidden md:flex items-center gap-3 bg-white/90 backdrop-blur-sm border border-slate-200/80 rounded-2xl px-4 py-2 text-xs" style={{ top: heroDismissed ? '76px' : `${60 + 80 + 8}px`, boxShadow: 'var(--shadow-md)' }}>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
               <Layers size={13} className="text-blue-600" />
               <span className="text-blue-700 font-bold">{filteredProjects.length}</span>

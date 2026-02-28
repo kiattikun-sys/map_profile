@@ -1,10 +1,11 @@
 'use client'
 
-import { motion, type Variants } from 'framer-motion'
+import { motion, type Variants, useInView, useMotionValue, useSpring } from 'framer-motion'
+import { useEffect, useRef } from 'react'
 import {
   Building2, Users, MapPin, Award, Target, Eye,
   CheckCircle2, Briefcase, GraduationCap, Wrench,
-  TreePine, HardHat, ScanLine, Phone,
+  TreePine, HardHat, ScanLine, Phone, ArrowRight,
 } from 'lucide-react'
 
 const fadeUp: Variants = {
@@ -18,11 +19,30 @@ const stagger: Variants = {
 }
 
 const STATS = [
-  { icon: Building2, label: 'โครงการที่ดำเนินการแล้ว', value: '200+', color: 'blue' },
-  { icon: MapPin,    label: 'จังหวัดทั่วประเทศ',        value: '30+',  color: 'green' },
-  { icon: Users,     label: 'ลูกค้าภาครัฐและเอกชน',     value: '10+',  color: 'purple' },
-  { icon: Award,     label: 'ปีประสบการณ์',              value: '15+',  color: 'amber' },
+  { icon: Building2, label: 'โครงการที่ดำเนินการแล้ว', value: 200, suffix: '+', color: 'blue' },
+  { icon: MapPin,    label: 'จังหวัดทั่วประเทศ',        value: 30,  suffix: '+', color: 'green' },
+  { icon: Users,     label: 'ลูกค้าภาครัฐและเอกชน',     value: 10,  suffix: '+', color: 'purple' },
+  { icon: Award,     label: 'ปีประสบการณ์',              value: 15,  suffix: '+', color: 'amber' },
 ]
+
+function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true })
+  const motionVal = useMotionValue(0)
+  const spring = useSpring(motionVal, { duration: 1800, bounce: 0 })
+
+  useEffect(() => {
+    if (inView) motionVal.set(value)
+  }, [inView, motionVal, value])
+
+  useEffect(() => {
+    return spring.on('change', (v) => {
+      if (ref.current) ref.current.textContent = Math.round(v) + suffix
+    })
+  }, [spring, suffix])
+
+  return <span ref={ref}>0{suffix}</span>
+}
 
 const SERVICES = [
   { icon: TreePine,   title: 'ภูมิสถาปัตยกรรม',        desc: 'ออกแบบพัฒนาพื้นที่สาธารณะ ริมน้ำ สวนเทิดพระเกียรติ และภูมิทัศน์เมืองระดับชาติ' },
@@ -74,27 +94,192 @@ function Section({ children, className = '' }: { children: React.ReactNode; clas
 export default function AboutAnimated() {
   return (
     <div className="pt-[60px] flex-1">
-      {/* Hero */}
-      <div className="brand-hero-gradient text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-22">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.52, ease: [0.25, 0.1, 0.25, 1] }}
-            className="max-w-3xl"
-          >
-            <p className="brand-label">TRIPIRA CO., LTD. · บริษัท ไตรพีระ จำกัด</p>
-            <div className="brand-divider opacity-60" />
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-5 tracking-[-0.025em]">
-              ออกแบบพื้นที่สาธารณะ<br className="hidden md:block" />
-              ระดับชาติ ด้วยความเชี่ยวชาญจริง
-            </h1>
-            <p className="text-[15px] text-blue-200/80 leading-relaxed max-w-2xl">
-              บริษัทวิศวกรรมและภูมิสถาปัตยกรรมที่ได้รับความไว้วางใจจากหน่วยงานรัฐชั้นนำ
-              อาทิ กรมโยธาธิการและผังเมือง Bangchak PTT และ Lotus’s
-              ด้วยผลงานมูลค่ารวมกว่า 1,500 ล้านบาททั่วประเทศ
-            </p>
-          </motion.div>
+      {/* Hero — Split Layout */}
+      <div className="brand-hero-gradient text-white overflow-hidden relative">
+        {/* Decorative grid lines */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
+          backgroundSize: '60px 60px'
+        }} />
+        {/* Decorative circles */}
+        <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-white/[0.03] blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full bg-blue-400/[0.08] blur-2xl" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left — text */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <p className="brand-label">TRIPIRA CO., LTD. · บริษัท ไตรพีระ จำกัด</p>
+              <div className="brand-divider opacity-60" />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-5 tracking-[-0.025em]">
+                ออกแบบพื้นที่สาธารณะ<br className="hidden sm:block" />
+                ระดับชาติ ด้วยความเชี่ยวชาญจริง
+              </h1>
+              <p className="text-[15px] text-blue-200/80 leading-relaxed mb-8">
+                บริษัทวิศวกรรมและภูมิสถาปัตยกรรมที่ได้รับความไว้วางใจจากหน่วยงานรัฐชั้นนำ
+                อาทิ กรมโยธาธิการและผังเมือง Bangchak PTT และ Lotus’s
+                ด้วยผลงานมูลค่ารวมกว่า 1,500 ล้านบาททั่วประเทศ
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a href="/projects" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-blue-900 rounded-xl text-[13.5px] font-bold hover:bg-blue-50 transition-colors duration-200" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>
+                  ดูโครงการ <ArrowRight size={14} strokeWidth={2.5} />
+                </a>
+                <a href="/contact" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white border border-white/20 rounded-xl text-[13.5px] font-semibold hover:bg-white/20 transition-colors duration-200">
+                  ติดต่อเรา
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Right — SVG Architecture Illustration */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+              className="hidden lg:flex items-center justify-center"
+            >
+              <div className="relative w-full max-w-md">
+                {/* Glow behind illustration */}
+                <div className="absolute inset-0 bg-blue-400/20 rounded-3xl blur-2xl" />
+                <svg viewBox="0 0 480 380" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative w-full drop-shadow-2xl">
+                  {/* Sky gradient */}
+                  <defs>
+                    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.4"/>
+                      <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.1"/>
+                    </linearGradient>
+                    <linearGradient id="bldg1" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25"/>
+                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0.08"/>
+                    </linearGradient>
+                    <linearGradient id="bldg2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#93c5fd" stopOpacity="0.3"/>
+                      <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.1"/>
+                    </linearGradient>
+                    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.12"/>
+                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0.04"/>
+                    </linearGradient>
+                  </defs>
+                  {/* Background sky */}
+                  <rect width="480" height="380" fill="url(#sky)" rx="20"/>
+
+                  {/* Ground */}
+                  <rect x="0" y="300" width="480" height="80" fill="url(#ground)" rx="0"/>
+                  {/* Ground line */}
+                  <line x1="0" y1="300" x2="480" y2="300" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+
+                  {/* Trees row */}
+                  {[40,80,400,440].map((x,i) => (
+                    <g key={i}>
+                      <rect x={x-4} y="278" width="8" height="22" fill="rgba(255,255,255,0.15)" rx="2"/>
+                      <ellipse cx={x} cy="270" rx="14" ry="18" fill="rgba(134,239,172,0.2)"/>
+                      <ellipse cx={x} cy="264" rx="10" ry="14" fill="rgba(134,239,172,0.3)"/>
+                    </g>
+                  ))}
+
+                  {/* Building 1 — tall center */}
+                  <rect x="180" y="100" width="120" height="200" fill="url(#bldg1)" rx="4"/>
+                  <rect x="180" y="100" width="120" height="200" stroke="rgba(255,255,255,0.2)" strokeWidth="1" rx="4"/>
+                  {/* Windows B1 */}
+                  {[0,1,2,3,4,5,6,7].map(row => [0,1,2].map(col => (
+                    <rect key={`b1-${row}-${col}`} x={190+col*36} y={115+row*22} width="20" height="14"
+                      fill={row < 5 ? 'rgba(255,255,255,0.35)' : 'rgba(147,197,253,0.2)'} rx="2"/>
+                  )))}
+                  {/* Rooftop detail */}
+                  <rect x="190" y="90" width="100" height="12" fill="rgba(255,255,255,0.2)" rx="3"/>
+                  <rect x="220" y="78" width="40" height="14" fill="rgba(255,255,255,0.15)" rx="2"/>
+                  <rect x="235" y="65" width="10" height="15" fill="rgba(255,255,255,0.3)" rx="1"/>
+
+                  {/* Building 2 — left medium */}
+                  <rect x="90" y="160" width="80" height="140" fill="url(#bldg2)" rx="3"/>
+                  <rect x="90" y="160" width="80" height="140" stroke="rgba(255,255,255,0.15)" strokeWidth="1" rx="3"/>
+                  {[0,1,2,3,4].map(row => [0,1].map(col => (
+                    <rect key={`b2-${row}-${col}`} x={100+col*32} y={173+row*22} width="18" height="13"
+                      fill="rgba(255,255,255,0.25)" rx="2"/>
+                  )))}
+
+                  {/* Building 3 — right short */}
+                  <rect x="310" y="190" width="80" height="110" fill="url(#bldg2)" rx="3"/>
+                  <rect x="310" y="190" width="80" height="110" stroke="rgba(255,255,255,0.15)" strokeWidth="1" rx="3"/>
+                  {[0,1,2,3].map(row => [0,1].map(col => (
+                    <rect key={`b3-${row}-${col}`} x={320+col*32} y={203+row*22} width="18" height="13"
+                      fill="rgba(255,255,255,0.25)" rx="2"/>
+                  )))}
+
+                  {/* Road/path */}
+                  <rect x="200" y="300" width="80" height="80" fill="rgba(255,255,255,0.08)"/>
+                  <line x1="240" y1="300" x2="240" y2="380" stroke="rgba(255,255,255,0.15)" strokeWidth="2" strokeDasharray="8 6"/>
+
+                  {/* Trees/landscape elements */}
+                  {[130,150,330,350].map((x,i) => (
+                    <g key={`t2-${i}`}>
+                      <rect x={x-3} y="285" width="6" height="15" fill="rgba(255,255,255,0.12)" rx="1"/>
+                      <ellipse cx={x} cy="278" rx="10" ry="13" fill="rgba(134,239,172,0.15)"/>
+                    </g>
+                  ))}
+
+                  {/* Stars/dots */}
+                  {[[60,40],[120,25],[380,30],[430,50],[460,20],[50,80]].map(([x,y],i) => (
+                    <circle key={`s-${i}`} cx={x} cy={y} r="1.5" fill="rgba(255,255,255,0.5)"/>
+                  ))}
+
+                  {/* Moon/sun */}
+                  <circle cx="420" cy="55" r="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+                  <circle cx="420" cy="55" r="12" fill="rgba(255,255,255,0.12)"/>
+
+                  {/* Measurement lines — engineering detail */}
+                  <line x1="180" y1="340" x2="300" y2="340" stroke="rgba(255,255,255,0.25)" strokeWidth="1"/>
+                  <line x1="180" y1="335" x2="180" y2="345" stroke="rgba(255,255,255,0.25)" strokeWidth="1"/>
+                  <line x1="300" y1="335" x2="300" y2="345" stroke="rgba(255,255,255,0.25)" strokeWidth="1"/>
+                  <text x="240" y="338" textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="9" fontFamily="monospace">120.00 m.</text>
+
+                  {/* Compass rose — top right */}
+                  <g transform="translate(448,45)">
+                    <circle cx="0" cy="0" r="16" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+                    <line x1="0" y1="-12" x2="0" y2="12" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+                    <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+                    <polygon points="0,-12 -3,-4 3,-4" fill="rgba(255,255,255,0.6)"/>
+                    <text x="0" y="-14" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7" fontFamily="monospace">N</text>
+                  </g>
+                </svg>
+
+                {/* Floating badge */}
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+                  className="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-3 flex items-center gap-3"
+                  style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
+                >
+                  <div className="w-9 h-9 bg-blue-800 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Award size={16} className="text-white" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-black text-slate-900 leading-none">15+ ปี</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">ประสบการณ์</p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: 0.5 }}
+                  className="absolute -top-4 -right-2 bg-white rounded-2xl px-4 py-3 flex items-center gap-3"
+                  style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
+                >
+                  <div className="w-9 h-9 bg-emerald-700 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Building2 size={16} className="text-white" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-black text-slate-900 leading-none">200+ โครงการ</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">ทั่วประเทศ</p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
 
@@ -122,7 +307,9 @@ export default function AboutAnimated() {
               }`}>
                 <stat.icon size={20} strokeWidth={1.8} />
               </div>
-              <p className="text-3xl font-black text-slate-900 tracking-[-0.03em]">{stat.value}</p>
+              <p className="text-3xl font-black text-slate-900 tracking-[-0.03em]">
+                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+              </p>
               <p className="text-[12.5px] text-slate-500 mt-1 leading-snug">{stat.label}</p>
             </motion.div>
           ))}

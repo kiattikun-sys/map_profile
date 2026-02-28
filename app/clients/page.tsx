@@ -32,18 +32,29 @@ export default async function ClientsPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
       <Navbar />
-      <div className="pt-[60px] brand-hero-gradient text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div className="pt-[60px] relative text-white overflow-hidden" style={{ minHeight: '280px' }}>
+        {/* Unsplash — corporate/government building */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&auto=format&fit=crop')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/85 to-blue-800/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-950/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 opacity-[0.05]" style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
+          backgroundSize: '48px 48px'
+        }} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <p className="brand-label">ลูกค้าของเรา — TRIPIRA</p>
           <div className="brand-divider opacity-60" />
           <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.02em] leading-tight">พาร์ทเนอร์ชั้นนำ</h1>
-          <p className="text-blue-200/80 text-[15px] max-w-lg leading-relaxed">
+          <p className="text-blue-100/80 text-[15px] max-w-lg leading-relaxed mb-10">
             หน่วยงานภาครัฐชั้นนำและบริษัทเอกชนระดับประเทศที่ไว้วางใจในคุณภาพงานของเรา
           </p>
-          <div className="flex flex-wrap gap-8 mt-10">
+          <div className="flex flex-wrap gap-8">
             <div>
-              <p className="text-3xl font-black tracking-[-0.03em]">{clients.length}</p>
-              <p className="text-[12px] text-blue-300/70 mt-0.5 uppercase tracking-widest font-medium">ลูกค้าและพาร์ทเนอร์</p>
+              <p className="text-4xl font-black tracking-[-0.04em]">{clients.length}</p>
+              <p className="text-[11px] text-blue-300/70 mt-1 uppercase tracking-[0.15em] font-semibold">ลูกค้าและพาร์ทเนอร์</p>
             </div>
           </div>
         </div>
