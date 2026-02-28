@@ -113,6 +113,43 @@ export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
 export type Client = Database['public']['Tables']['clients']['Row']
 export type ClientInsert = Database['public']['Tables']['clients']['Insert']
 
+export type UserRole = 'super' | 'admin' | 'client' | 'viewer'
+
+export interface Profile {
+  id: string
+  role: UserRole
+  client_org_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ClientOrg {
+  id: string
+  name: string
+  created_at: string
+}
+
+export interface ProjectUpdateRow {
+  id: string
+  project_id: string
+  author_id: string | null
+  progress: number | null
+  status: string | null
+  note: string | null
+  created_at: string
+}
+
+export interface ProjectFileRow {
+  id: string
+  project_id: string
+  uploaded_by: string | null
+  storage_path: string
+  label: string | null
+  mime_type: string | null
+  size_bytes: number | null
+  created_at: string
+}
+
 export interface OverlayBounds {
   topLeft: [number, number]
   topRight: [number, number]
