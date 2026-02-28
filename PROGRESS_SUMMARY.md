@@ -3,10 +3,11 @@
 **Live URL:** https://map-profile-rho.vercel.app
 **GitHub:** https://github.com/kiattikun-sys/map_profile
 **Last Updated:** 28 Feb 2026
+**Latest Commit:** `72b0167`
 
 ---
 
-## สิ่งที่ทำทั้งหมด (Phase 1–20 + Bug Fixes)
+## สิ่งที่ทำทั้งหมด (Phase 1–20 + UI/UX Upgrade + Visual Upgrade)
 
 ### Phase 1 — Project Card + Cover Image
 - สร้าง `lib/project-utils.ts` — helper `getProjectCoverImage`, `getTypeGradient`, `getProjectImageUrl`, `getProjectDocUrl`
@@ -81,6 +82,93 @@
 
 ---
 
+## UI/UX Luxury Upgrade (Phase A–I)
+
+### Phase A — Brand Tokens
+- `app/globals.css` — CSS custom properties: primary/accent/neutral color scales, typography scale (`--text-xs` → `--text-5xl`), elevation system (`--shadow-sm/md/lg/xl`), border radius system, motion easing/duration tokens
+- Classes: `.brand-hero-gradient`, `.brand-label`, `.brand-divider`
+
+### Phase B — Premium Layout Architecture
+- ปรับ `max-w-7xl` consistent ทุกหน้า, vertical rhythm, whitespace ระหว่าง section
+- `app/projects/page.tsx`, `app/clients/page.tsx`, `app/contact/page.tsx` — เปลี่ยน background เป็น `var(--background)`
+
+### Phase C — Executive Typography Upgrade
+- Heading weight hierarchy: `font-bold` / `font-black`, letter-spacing `tracking-[-0.02em]` to `[-0.04em]`
+- Label style: uppercase + `tracking-[0.15em]` + `text-[11px]`
+- ใช้ `brand-label` + `brand-divider` ใน hero ทุกหน้า
+
+### Phase D — Surface & Card Luxury Polish
+- `var(--shadow-sm/md/lg)` แทน Tailwind shadow ตรง
+- `rounded-2xl` unified radius บน cards ทุก component
+- Hover elevation: `whileHover={{ y: -2, boxShadow: 'var(--shadow-lg)' }}`
+- `components/AboutAnimated.tsx` — services, timeline, team, certs sections polish
+
+### Phase E — Motion & Interaction Rebalance
+- Unified easing `[0.25, 0.1, 0.25, 1]` (cubic-bezier) ทุก transition
+- Duration 0.5–0.6s สำหรับ hero, 0.08s stagger children
+- `viewport={{ once: true, margin: '-60px' }}` ทุก whileInView
+
+### Phase F — Executive Hero Sections
+- `app/projects/page.tsx` — brand-hero-gradient + brand-label + brand-divider + stats strip
+- `app/clients/page.tsx` — brand-hero-gradient + hero text
+- `app/contact/page.tsx` — brand-hero-gradient + hero text
+- `components/AboutAnimated.tsx` — brand-hero-gradient hero + refined typography
+
+### Phase G — Micro Luxury Details
+- Animated nav underline (active link indicator ใน Navbar)
+- Section dividers (`brand-divider`)
+- Hover parallax `whileHover={{ y: -2 }}` บน cards
+
+### Phase H — Mobile Executive Optimization
+- Responsive spacing: `py-16 sm:py-20`, `px-4 sm:px-6 lg:px-8`
+- Touch-friendly tap targets ≥44px
+- Hero height ปรับตาม breakpoint (`text-3xl sm:text-4xl md:text-5xl`)
+
+### Phase I — Final Visual Audit
+- Build verify ผ่านทุก route (12 routes), TypeScript 0 errors
+- Color consistency ตรวจสอบ brand token usage
+- SEO metadata ครบทุกหน้า
+
+---
+
+## Visual Upgrade (Gradient + Illustration)
+
+### About Page — Split Hero + SVG Illustration
+- `components/AboutAnimated.tsx` — เขียนใหม่ hero section เป็น `grid grid-cols-1 lg:grid-cols-2`
+- **ซ้าย:** brand label, heading, description, CTA buttons ("ดูโครงการ" + "ติดต่อเรา")
+- **ขวา:** SVG cityscape illustration วาด inline — buildings 3 หลัง, trees, road, stars, moon, compass rose, measurement lines (engineering detail)
+- Floating animated badges: "15+ ปี ประสบการณ์" และ "200+ โครงการ ทั่วประเทศ" (Framer Motion `animate={{ y: [0,-6,0] }}` loop)
+- Decorative grid pattern + glow orbs ใน hero background
+- **`AnimatedCounter` component** — `useMotionValue` + `useSpring` (duration: 1800ms) นับตัวเลขจาก 0 → ค่าจริง เมื่อ scroll เข้า viewport
+
+### Projects Hero — Background Image
+- `app/projects/page.tsx` — เปลี่ยนจาก `brand-hero-gradient` เป็น Unsplash landscape architecture photo (`photo-1486325212027-8081e485255e`)
+- Multi-layer overlay: `from-blue-950/95 via-blue-900/85 to-blue-900/70` + bottom fade
+- Decorative grid pattern opacity-[0.06]
+- Stats: `text-4xl font-black` + `tracking-[0.15em]` uppercase labels
+
+### Clients Hero — Background Image
+- `app/clients/page.tsx` — Unsplash corporate building photo (`photo-1497366216548-37526070297c`)
+- Same overlay + grid pattern treatment
+
+### Contact Page — Google Maps + Premium Form
+- `components/ContactClient.tsx` — เขียนใหม่ทั้งหมด
+- **Google Maps iframe** embed 320px full-width ด้านบน (สำนักงานใหญ่ เขตบึงกุ่ม กรุงเทพฯ)
+- Layout `lg:grid-cols-5` — 2/5 info col + 3/5 form col
+- Contact info cards: `rounded-2xl`, `var(--shadow-sm)`, icon color-coded, copy-to-clipboard on hover
+- Social buttons (Facebook + LINE)
+- Coverage areas panel (blue tint bg)
+- Premium form: `bg-slate-50` inputs, focus ring `focus:ring-blue-600/25`, 2-column name/phone grid
+- Submit button: `var(--shadow)` blue glow
+
+### Homepage — Hero Banner Above Map
+- `components/MapPageClient.tsx` — เพิ่ม dismissible hero banner (80px) ระหว่าง Navbar กับ Map
+- Gradient `135deg #1e3a8a → #1d4ed8 → #1e40af` + grid pattern
+- แสดง: brand tagline (ซ้าย) + live stats chips (กลาง: โครงการ/จังหวัด/มูลค่างาน) + "เกี่ยวกับเรา" CTA + dismiss button (ขวา)
+- Filter panel top offset + floating stats pill top offset ปรับ dynamic ตามสถานะ `heroDismissed`
+
+---
+
 ## Bug Fixes หลัง Deploy
 
 ### Fix — Unicode Escape Sequences
@@ -100,26 +188,50 @@
 | `app/layout.tsx` | SEO metadata + JSON-LD + BackToTop |
 | `app/page.tsx` | homepage → MapPageClient |
 | `app/about/page.tsx` | → AboutAnimated |
-| `app/projects/page.tsx` | metadata + hero + ProjectsClient |
+| `app/projects/page.tsx` | metadata + hero (Unsplash bg) + stats strip + ProjectsClient |
 | `app/projects/[id]/page.tsx` | generateMetadata + JSON-LD + related projects |
-| `app/clients/page.tsx` | metadata + hero + ClientsClient |
+| `app/clients/page.tsx` | metadata + hero (Unsplash bg) + ClientsClient |
 | `app/contact/page.tsx` | metadata + hero + ContactClient |
-| `app/globals.css` | smooth scroll, scrollbar, selection, keyframes |
+| `app/globals.css` | brand tokens (colors/typography/elevation/radius/motion) + smooth scroll + scrollbar + selection + keyframes + `.brand-hero-gradient` + `.brand-label` + `.brand-divider` |
 | `app/not-found.tsx` | custom 404 |
 | `app/projects/loading.tsx` | skeleton |
 | `app/clients/loading.tsx` | skeleton |
 | `app/sitemap.ts` | dynamic sitemap |
 | `app/robots.ts` | robots.txt |
-| `components/Navbar.tsx` | TRIPIRA branding + active indicator |
-| `components/Footer.tsx` | gradient border + scroll-to-top |
-| `components/ProjectCard.tsx` | cover image + premium design |
-| `components/ProjectsClient.tsx` | filter chips + sort + search |
+| `components/Navbar.tsx` | TRIPIRA branding + active underline indicator + brand token colors |
+| `components/Footer.tsx` | gradient border + scroll-to-top + brand token polish |
+| `components/ProjectCard.tsx` | cover image + premium design + hover elevation |
+| `components/ProjectsClient.tsx` | filter chips + sort + search + brand token styling |
 | `components/ProjectDetailClient.tsx` | gallery + lightbox + related projects |
-| `components/ClientsClient.tsx` | sector filter + search |
-| `components/ContactClient.tsx` | copy-to-clipboard |
-| `components/AboutAnimated.tsx` | scroll-reveal animations |
+| `components/ClientsClient.tsx` | sector filter + search + brand token styling |
+| `components/ContactClient.tsx` | Google Maps iframe + premium cards + coverage areas + refined form |
+| `components/AboutAnimated.tsx` | split hero (text + SVG cityscape illustration) + AnimatedCounter + floating badges + scroll-reveal + brand token polish |
 | `components/FilterPanel.tsx` | chips + keyboard shortcut |
-| `components/MapPageClient.tsx` | stats pill + debounce + loading |
+| `components/MapPageClient.tsx` | dismissible hero banner + live stats + dynamic filter/pill offsets + stats pill polish |
 | `components/MapView.tsx` | TYPE_COLOR_MATCH เพิ่ม สำรวจ |
 | `components/BackToTop.tsx` | floating button |
 | `lib/project-utils.ts` | helper functions |
+
+---
+
+## Commit History (สำคัญ)
+
+| Commit | รายละเอียด |
+|--------|-----------|
+| `f4b1a9e` | feat: PHASE A-H luxury UI/UX upgrade — brand tokens, executive hero, premium cards, refined typography, motion rebalance, mobile optimization |
+| `72b0167` | feat: Visual Upgrade — About split hero SVG illustration, animated counters, bg-image heroes (Projects/Clients), Google Maps embed + premium Contact form, Homepage hero banner |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS + CSS custom properties (brand tokens) |
+| Animation | Framer Motion (`motion`, `useInView`, `useMotionValue`, `useSpring`) |
+| Icons | Lucide React |
+| Backend | Supabase (PostgreSQL + Storage) |
+| Hosting | Vercel (auto-deploy from `main`) |
+| Maps | Leaflet (dynamic import, SSR disabled) |
