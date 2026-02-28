@@ -201,3 +201,147 @@ Banner คือแถบข้อมูลที่แสดงด้านบ�
 ---
 
 *คู่มือนี้จัดทำโดย TRIPIRA Development Team*
+
+---
+
+## 12. RBAC — Role-Based Access Control (Phase 1)
+
+### 12.1 Role ทั้ง 4 ระดับ
+
+| Role | สิทธิ์ |
+|------|--------|
+| **super** | ทุกอย่าง — จัดการ users, roles, ทุก table |
+| **admin** | จัดการข้อมูลโครงการ/ลูกค้าทั้งหมด, ดู files/updates ทั้งหมด |
+| **client** | เห็นเฉพาะโครงการขององค์กรตัวเอง, เพิ่ม updates/อัปโหลดไฟล์ได้ |
+| **viewer** | อ่านอย่างเดียว (read-only ทุก table) |
+
+---
+
+### 12.2 ตารางใหม่ที่เพิ่มใน Phase 1
+
+#### `client_orgs`
+องค์กรลูกค้า — 1 org มีหลาย projects
+
+```sql
+id         UUID PK
+name       TEXT
+created_at TIMESTAMPTZ
+```
+
+#### `profiles`
+ข้อมูล role ของ auth user ทุกคน (สร้างอัตโนมัติเมื่อ user ลงทะเบียน)
+
+```sql
+id            UUID PK → auth.users(id)
+role          TEXT  ('super'|'admin'|'client'|'viewer')  default 'viewer'
+client_org_id UUID → client_orgs(id)   (nullable — เฉพาะ role=client)
+created_at    TIMESTAMPTZ
+updated_at    TIMESTAMPTZ
+```
+
+#### `project_updates`
+บันทึกความคืบหน้า / status / note ของโครงการ
+
+```sql
+id          UUID PK
+project_id  UUID → projects(id)
+author_id   UUID → auth.users(id)
+progress    INTEGER  (0–100)
+status      TEXT
+note        TEXT
+created_at  TIMESTAMPTZ
+```
+
+#### `project_files`
+ไฟล์ที่ client อัปโหลดต่อโครงการ
+
+```sql
+id           UUID PK
+project_id   UUID → projects(id)
+uploaded_by  UUID → auth.users(id)
+storage_path TEXT   (รูปแบบ: org/<org_id>/project/<project_id>/<filename>)
+label        TEXT
+mime_type    TEXT
+size_bytes   BIGINT
+created_at   TIMESTAMPTZ
+```
+
+#### คอลัมน์ใหม่ใน `projects`
+```sql
+client_org_id UUID → client_orgs(id)   (nullable)
+```
+
+---
+
+### 12.3 Storage Bucket: `project-client-files`
+
+- **Public = false** (private bucket)
+- Path convention: `org/<client_org_id>/project/<project_id>/<filename>`
+- สิทธิ์:
+  - `super/admin` → อ่าน/เขียนได้ทุก path
+  - `client` → อ่าน/เขียนได้เฉพาะ `org/<ตัวเอง>/` เท่านั้น
+  - `viewer/anon` → ไม่มีสิทธิ์เลย
+- การดูไฟล์ในระบบ UI จะใช้ **Signed URL** (short TTL) — ไม่ต้องเปิด bucket เป็น public
+
+---
+
+### 12.4 วิธีรัน SQL (Phase 1)
+
+1. เปิด **Supabase Dashboard** → **SQL Editor**
+2. คัดลอก SQL จาก `lib/rbac-phase1.sql` ทั้งไฟล์
+3. วาง → กด **Run**
+4. ตรวจสอบว่าไม่มี error
+5. **Promote ตัวเองเป็น super** (แก้ comment บรรทัดสุดท้ายในไฟล์):
+   ```sql
+   UPDATE profiles
+   SET role = 'super'
+   WHERE id = (SELECT id FROM auth.users WHERE email = 'kiattikun@trpra.com');
+   ```
+6. Promote Mongkol เป็น admin:
+   ```sql
+   UPDATE profiles
+   SET role = 'admin'
+   WHERE id = (SELECT id FROM auth.users WHERE email = 'mongkolc@tripeera.com');
+   ```
+
+---
+
+### 12.5 วิธีเพิ่ม Client Org และผูก User
+
+```sql
+-- 1. สร้าง org
+INSERT INTO client_orgs (name) VALUES ('บริษัท ABC จำกัด') RETURNING id;
+
+-- 2. ผูก user กับ org (ใช้ org id ที่ได้จากขั้นตอน 1)
+UPDATE profiles
+SET role = 'client', client_org_id = '<org_id_here>'
+WHERE id = (SELECT id FROM auth.users WHERE email = 'client@example.com');
+
+-- 3. ผูกโครงการเข้ากับ org
+UPDATE projects
+SET client_org_id = '<org_id_here>'
+WHERE id = '<project_id_here>';
+```
+
+---
+
+### 12.6 Phase 1 Test Checklist
+
+- [ ] รัน `lib/rbac-phase1.sql` ใน Supabase SQL Editor ได้โดยไม่มี error
+- [ ] ตาราง `client_orgs`, `profiles`, `project_updates`, `project_files` สร้างแล้ว
+- [ ] คอลัมน์ `client_org_id` ปรากฏใน `projects` table
+- [ ] Bucket `project-client-files` สร้างแล้ว (public = false)
+- [ ] `profiles` มีแถวสำหรับ users ที่มีอยู่แล้วทั้งหมด (backfill)
+- [ ] Promote kiattikun → `super` แล้ว
+- [ ] Promote mongkolc → `admin` แล้ว
+- [ ] ทดสอบ: user role=viewer ไม่สามารถ INSERT projects ได้
+- [ ] ทดสอบ: user role=client เห็นเฉพาะ projects ที่ผูก org ตัวเอง
+
+---
+
+### 12.7 Phase 2 (รอหลัง Phase 1 ผ่าน)
+
+- เพิ่ม route `/client` — "My Projects" สำหรับ role=client
+- Project detail: แสดง updates list + form เพิ่ม update + อัปโหลดไฟล์
+- ซ่อน admin-only controls จาก client/viewer
+- Signed URL generation สำหรับ preview/download ไฟล์
