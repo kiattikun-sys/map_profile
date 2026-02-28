@@ -68,8 +68,8 @@ export default function ProjectSidePanel({
             key="side-panel"
             className={[
               'fixed z-40 bg-white shadow-2xl flex flex-col overflow-hidden',
-              // Desktop: left panel
-              'md:top-0 md:left-0 md:bottom-0 md:w-[440px]',
+              // Desktop: left panel — starts below Navbar (60px)
+              'md:top-[60px] md:left-0 md:bottom-0 md:w-[440px]',
               // Mobile: bottom sheet
               'bottom-0 left-0 right-0 md:right-auto max-h-[82vh] md:max-h-none rounded-t-2xl md:rounded-none',
             ].join(' ')}
