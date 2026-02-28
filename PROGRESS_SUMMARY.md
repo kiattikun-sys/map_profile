@@ -3,7 +3,7 @@
 **Live URL:** https://map-profile-rho.vercel.app
 **GitHub:** https://github.com/kiattikun-sys/map_profile
 **Last Updated:** 28 Feb 2026
-**Latest Commit:** `72b0167`
+**Latest Commit:** `6f1e82b`
 
 ---
 
@@ -181,36 +181,148 @@
 
 ---
 
+## Hybrid CMS System
+
+### Phase CMS-1 — SQL Migration + Tables
+- `lib/cms-migration.sql` — สร้าง 5 tables: `site_sections`, `site_settings`, `homepage_banner`, `featured_projects`, `key_clients`
+- RLS policies สำหรับทุก table (authenticated = full access, anon = read-only)
+- Seed default content สำหรับ Home/Projects/Clients/About/Contact/SEO
+
+### Phase CMS-2 — Data Access Layer
+- `lib/site-content.ts` — functions: `getSiteSection`, `getSiteSettings`, `getHomepageBanner`, `getFeaturedProjects`, `getKeyClients`
+- Fallback defaults ทุก function เพื่อไม่ให้หน้าพัง
+
+### Phase CMS-3 — Admin UI
+- `components/admin/cms/CmsToast.tsx` — reusable toast notification
+- `components/admin/cms/CmsImageUpload.tsx` — Supabase Storage upload component
+- `components/admin/cms/AdminSiteEditor.tsx` — tabs: Home/Projects/Clients/About/Contact/SEO
+- `components/admin/cms/AdminBannerEditor.tsx` — เปิด/ปิด, headline, message, CTA, background image
+- `components/admin/cms/AdminFeaturedEditor.tsx` — drag-to-reorder featured projects + key clients
+- `app/admin/site/page.tsx` — `/admin/site`
+- `app/admin/banner/page.tsx` — `/admin/banner`
+- `app/admin/featured/page.tsx` — `/admin/featured`
+- `components/admin/AdminDashboard.tsx` — เพิ่ม CMS navigation links ใน sidebar
+
+### Phase CMS-4 — Wire Public Pages to CMS
+- `app/page.tsx` — fetch banner server-side → pass to `MapPageClient`
+- `components/MapPageClient.tsx` — รับ `banner` prop + CMS-driven content + background image
+- `app/projects/page.tsx` — hero content จาก `site_sections`
+- `components/ProjectsClient.tsx` — featured projects strip toggle
+- `app/clients/page.tsx` — hero + featured clients
+- `components/ClientsClient.tsx` — key clients strip
+- `app/contact/page.tsx` — hero + settings
+- `components/ContactClient.tsx` — รับ `settings` prop (phone/email/address/social/map_url)
+
+### Phase CMS-5 — Storage RLS Fix
+**ปัญหา:** `new row violates row-level security policy` เมื่อ upload รูปใน admin  
+**สาเหตุ:** bucket `site-assets` มี 0 policies  
+**แก้ไข:** เพิ่ม 4 policies ใน `lib/cms-migration.sql` และรันใน Supabase SQL Editor:
+- `site-assets public read` — TO public, SELECT
+- `site-assets authenticated upload` — TO authenticated, INSERT
+- `site-assets authenticated update` — TO authenticated, UPDATE
+- `site-assets authenticated delete` — TO authenticated, DELETE
+
+---
+
+## Map UX Upgrade
+
+### Map flyTo — Project Detail → Homepage Map
+- `components/ProjectDetailClient.tsx` — ปุ่ม "ดูบนแผนที่" ลิงก์ไป `/?lat=...&lng=...&zoom=14`
+- `components/MapPageClient.tsx` — `useSearchParams` อ่าน lat/lng/zoom + pass `flyTo` prop
+- `components/MapView.tsx` — `flyTo` effect animate `map.flyTo()` เมื่อแผนที่โหลดเสร็จ
+- `app/page.tsx` — wrap ด้วย `<Suspense>` สำหรับ `useSearchParams`
+
+### Slide-in Project Side Panel (Step 1)
+- **สร้างใหม่** `components/ProjectSidePanel.tsx` — Framer Motion slide-in จากซ้าย (desktop) / bottom sheet (mobile)
+  - รูป cover + image nav
+  - project tags (type/province/year)
+  - description (line-clamp-3)
+  - CTA "ดูรายละเอียดเต็มหน้า" → `/projects/[id]`
+  - ESC key ปิด panel
+  - backdrop สำหรับ mobile
+- `components/MapView.tsx` — เปลี่ยนเป็น `forwardRef` + `MapViewHandle` interface
+  - ลบ `ProjectCard` popup เก่าออก
+  - `onSelectProject` callback แทน internal state
+  - `selectedProjectId` prop เพื่อ highlight marker
+  - `cleanupOverlay(projectId)` exposed via handle
+  - `resize()` exposed via handle
+- `components/MapPageClient.tsx` — manage state: `selectedProject`, `panelOpen`
+  - `handleSelectProject` + `handleClosePanel` callbacks
+  - map resize หลัง panel animation (320ms delay)
+  - `md:ml-[440px]` บน map container เมื่อ panel เปิด
+
+### Layer Control Overlay (Step 2)
+- `components/ProjectSidePanel.tsx` — "ชั้นข้อมูลโครงการ" section
+  - toggle "ผังโครงการ" (disabled + tooltip ถ้าไม่มี overlay)
+  - opacity slider 5–100% realtime
+  - auto-enable เมื่อเลือกโครงการที่มี overlay
+- `components/MapView.tsx` — overlay controlled by parent (`overlayVisible`, `overlayOpacity`, `overlayProject`)
+  - Source/Layer ID: `project:{id}:overlay-source` / `project:{id}:overlay-layer`
+  - Toggle: `setLayoutProperty('visibility', 'none'/'visible')`
+  - Opacity: `setPaintProperty('raster-opacity', value)`
+  - Cleanup เก่าก่อน add ใหม่ (ป้องกัน duplicate)
+  - Corner order: `topLeft → topRight → bottomRight → bottomLeft`
+- `components/MapPageClient.tsx` — `activeLayers`, `overlayOpacity` state + pass ไปให้ MapView
+
+---
+
+## UI Bug Fixes (Latest)
+
+### Fix — Banner background image (mobile)
+- เปลี่ยนจาก CSS `background: url() + gradient` shorthand เป็น `<img>` absolute tag
+- แก้ปัญหา background ไม่แสดงบน mobile Chrome
+
+### Fix — Side Panel top offset
+- `components/ProjectSidePanel.tsx` — เปลี่ยน `md:top-0` → `md:top-[60px]` ให้ panel เริ่มใต้ Navbar
+
+### Fix — Banner horizontal padding
+- `components/MapPageClient.tsx` — เปลี่ยน `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` → `px-6 sm:px-10 lg:px-16`
+- ข้อความซ้ายและปุ่มขวาอยู่ห่างจากขอบจอ
+
+---
+
 ## Files Changed (ทั้งหมด)
 
 | ไฟล์ | การเปลี่ยนแปลง |
 |------|---------------|
 | `app/layout.tsx` | SEO metadata + JSON-LD + BackToTop |
-| `app/page.tsx` | homepage → MapPageClient |
+| `app/page.tsx` | homepage → MapPageClient + Suspense wrapper |
 | `app/about/page.tsx` | → AboutAnimated |
-| `app/projects/page.tsx` | metadata + hero (Unsplash bg) + stats strip + ProjectsClient |
+| `app/projects/page.tsx` | metadata + hero (Unsplash bg) + stats strip + ProjectsClient + CMS hero |
 | `app/projects/[id]/page.tsx` | generateMetadata + JSON-LD + related projects |
-| `app/clients/page.tsx` | metadata + hero (Unsplash bg) + ClientsClient |
-| `app/contact/page.tsx` | metadata + hero + ContactClient |
-| `app/globals.css` | brand tokens (colors/typography/elevation/radius/motion) + smooth scroll + scrollbar + selection + keyframes + `.brand-hero-gradient` + `.brand-label` + `.brand-divider` |
+| `app/clients/page.tsx` | metadata + hero (Unsplash bg) + ClientsClient + CMS hero |
+| `app/contact/page.tsx` | metadata + hero + ContactClient + CMS settings |
+| `app/admin/site/page.tsx` | **(new)** CMS site content editor |
+| `app/admin/banner/page.tsx` | **(new)** CMS banner editor |
+| `app/admin/featured/page.tsx` | **(new)** CMS featured editor |
+| `app/globals.css` | brand tokens + smooth scroll + scrollbar + keyframes |
 | `app/not-found.tsx` | custom 404 |
 | `app/projects/loading.tsx` | skeleton |
 | `app/clients/loading.tsx` | skeleton |
 | `app/sitemap.ts` | dynamic sitemap |
 | `app/robots.ts` | robots.txt |
-| `components/Navbar.tsx` | TRIPIRA branding + active underline indicator + brand token colors |
-| `components/Footer.tsx` | gradient border + scroll-to-top + brand token polish |
-| `components/ProjectCard.tsx` | cover image + premium design + hover elevation |
-| `components/ProjectsClient.tsx` | filter chips + sort + search + brand token styling |
-| `components/ProjectDetailClient.tsx` | gallery + lightbox + related projects |
-| `components/ClientsClient.tsx` | sector filter + search + brand token styling |
-| `components/ContactClient.tsx` | Google Maps iframe + premium cards + coverage areas + refined form |
-| `components/AboutAnimated.tsx` | split hero (text + SVG cityscape illustration) + AnimatedCounter + floating badges + scroll-reveal + brand token polish |
+| `components/Navbar.tsx` | TRIPIRA branding + active underline |
+| `components/Footer.tsx` | gradient border + scroll-to-top |
+| `components/ProjectCard.tsx` | cover image + premium design |
+| `components/ProjectsClient.tsx` | filter chips + sort + search + featured strip |
+| `components/ProjectDetailClient.tsx` | gallery + lightbox + related + "ดูบนแผนที่" flyTo link |
+| `components/ClientsClient.tsx` | sector filter + search + key clients strip |
+| `components/ContactClient.tsx` | Google Maps iframe + premium form + CMS settings prop |
+| `components/AboutAnimated.tsx` | split hero SVG + AnimatedCounter + scroll-reveal |
 | `components/FilterPanel.tsx` | chips + keyboard shortcut |
-| `components/MapPageClient.tsx` | dismissible hero banner + live stats + dynamic filter/pill offsets + stats pill polish |
-| `components/MapView.tsx` | TYPE_COLOR_MATCH เพิ่ม สำรวจ |
+| `components/MapPageClient.tsx` | CMS banner + flyTo + side panel state + overlay state + map resize |
+| `components/MapView.tsx` | forwardRef + MapViewHandle + onSelectProject + overlay management + flyTo |
+| `components/ProjectSidePanel.tsx` | **(new)** slide-in panel + layer control |
 | `components/BackToTop.tsx` | floating button |
+| `components/admin/AdminDashboard.tsx` | CMS nav links |
+| `components/admin/cms/CmsToast.tsx` | **(new)** toast |
+| `components/admin/cms/CmsImageUpload.tsx` | **(new)** image upload |
+| `components/admin/cms/AdminSiteEditor.tsx` | **(new)** site content tabs |
+| `components/admin/cms/AdminBannerEditor.tsx` | **(new)** banner editor |
+| `components/admin/cms/AdminFeaturedEditor.tsx` | **(new)** featured drag-reorder |
 | `lib/project-utils.ts` | helper functions |
+| `lib/site-content.ts` | **(new)** CMS data access layer |
+| `lib/cms-migration.sql` | **(new)** CMS tables + RLS + storage policies |
 
 ---
 
@@ -218,8 +330,15 @@
 
 | Commit | รายละเอียด |
 |--------|-----------|
-| `f4b1a9e` | feat: PHASE A-H luxury UI/UX upgrade — brand tokens, executive hero, premium cards, refined typography, motion rebalance, mobile optimization |
-| `72b0167` | feat: Visual Upgrade — About split hero SVG illustration, animated counters, bg-image heroes (Projects/Clients), Google Maps embed + premium Contact form, Homepage hero banner |
+| `f4b1a9e` | feat: PHASE A-H luxury UI/UX upgrade |
+| `72b0167` | feat: Visual Upgrade — About SVG, bg-image heroes, Contact form, Homepage banner |
+| `1e6796e` | feat: Hybrid CMS — 5 tables, admin UI, wire public pages |
+| `468dc72` | fix: banner background image rendering (absolute img tag) |
+| `2679edb` | feat: flyTo project location on map |
+| `80360f7` | feat(step1): Slide-in Project Side Panel |
+| `5696094` | feat(step2): Layer Control — overlay toggle + opacity slider |
+| `4b3fe94` | fix: panel top offset below navbar (60px) |
+| `6f1e82b` | fix: banner horizontal padding |
 
 ---
 
@@ -230,8 +349,19 @@
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript (strict) |
 | Styling | Tailwind CSS + CSS custom properties (brand tokens) |
-| Animation | Framer Motion (`motion`, `useInView`, `useMotionValue`, `useSpring`) |
+| Animation | Framer Motion (`motion`, `AnimatePresence`, `useMotionValue`, `useSpring`) |
 | Icons | Lucide React |
-| Backend | Supabase (PostgreSQL + Storage) |
+| Backend | Supabase (PostgreSQL + Storage + RLS) |
 | Hosting | Vercel (auto-deploy from `main`) |
-| Maps | Leaflet (dynamic import, SSR disabled) |
+| Maps | Mapbox GL JS (clustering, overlay, flyTo) |
+
+---
+
+## Admin Pages
+
+| URL | หน้าที่ |
+|-----|--------|
+| `/admin` | Dashboard — projects + clients CRUD |
+| `/admin/site` | แก้ไข hero text/image ทุกหน้า (Home/Projects/Clients/About/Contact/SEO) |
+| `/admin/banner` | เปิด/ปิด + แก้ไข Homepage Banner |
+| `/admin/featured` | เลือก + เรียงลำดับ Featured Projects + Key Clients |
