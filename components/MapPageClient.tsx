@@ -92,11 +92,21 @@ export default function MapPageClient({ banner }: Props) {
           style={{
             paddingTop: '60px',
             height: `${60 + HERO_H}px`,
-            background: bannerBgUrl
-              ? `linear-gradient(135deg, rgba(30,58,138,0.92), rgba(29,78,216,0.85)), url('${bannerBgUrl}') center/cover`
-              : 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%)'
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #1e40af 100%)',
           }}
         >
+          {/* Background image layer */}
+          {bannerBgUrl && (
+            <img
+              src={bannerBgUrl}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ opacity: 0.18 }}
+            />
+          )}
+          {/* Gradient overlay */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(30,58,138,0.88) 0%, rgba(29,78,216,0.80) 100%)' }} />
           {/* Grid pattern */}
           <div className="absolute inset-0 opacity-[0.06]" style={{
             backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',

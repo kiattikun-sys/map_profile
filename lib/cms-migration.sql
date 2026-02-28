@@ -137,6 +137,36 @@ ON CONFLICT DO NOTHING;
 -- (Run via Supabase Dashboard → Storage → New Bucket)
 -- Name: site-assets
 -- Public: true  (so image_path can be served as public URL)
+--
+-- ─────────────────────────────────────────────────────────────
+-- Storage RLS Policies for site-assets bucket
+-- Run this in Supabase SQL Editor
+-- ─────────────────────────────────────────────────────────────
+
+-- Allow public (anon) to read/view all files in site-assets
+CREATE POLICY "site-assets public read"
+  ON storage.objects FOR SELECT
+  TO public
+  USING (bucket_id = 'site-assets');
+
+-- Allow authenticated users to upload (INSERT) files
+CREATE POLICY "site-assets authenticated upload"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'site-assets');
+
+-- Allow authenticated users to update (upsert/overwrite) files
+CREATE POLICY "site-assets authenticated update"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (bucket_id = 'site-assets')
+  WITH CHECK (bucket_id = 'site-assets');
+
+-- Allow authenticated users to delete files
+CREATE POLICY "site-assets authenticated delete"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (bucket_id = 'site-assets');
 -- Suggested folder structure:
 --   hero/home.jpg
 --   hero/projects.jpg
