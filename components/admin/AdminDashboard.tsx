@@ -6,7 +6,8 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import {
   MapPin, Plus, LogOut, Edit2, Trash2, Search,
-  LayoutDashboard, Users, FolderOpen, ChevronRight, X
+  LayoutDashboard, Users, FolderOpen, ChevronRight, X,
+  FileText, Megaphone, Star
 } from 'lucide-react'
 import AdminProjectForm from './AdminProjectForm'
 import AdminClientForm from './AdminClientForm'
@@ -87,7 +88,9 @@ export default function AdminDashboard({ initialProjects, initialClients }: Admi
           </div>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+          {/* Data Management */}
+          <p className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em]">Data</p>
           <button
             onClick={() => setTab('projects')}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
@@ -112,6 +115,33 @@ export default function AdminDashboard({ initialProjects, initialClients }: Admi
               {clients.length}
             </span>
           </button>
+
+          {/* CMS */}
+          <p className="px-3 py-1.5 mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em]">CMS</p>
+          <a
+            href="/admin/site"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+          >
+            <FileText size={17} />
+            Site Content
+            <ChevronRight size={13} className="ml-auto" />
+          </a>
+          <a
+            href="/admin/banner"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+          >
+            <Megaphone size={17} />
+            Banner
+            <ChevronRight size={13} className="ml-auto" />
+          </a>
+          <a
+            href="/admin/featured"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+          >
+            <Star size={17} />
+            Featured & Key
+            <ChevronRight size={13} className="ml-auto" />
+          </a>
         </nav>
 
         <div className="p-3 border-t border-gray-700">

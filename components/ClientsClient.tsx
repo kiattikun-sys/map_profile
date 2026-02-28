@@ -7,6 +7,7 @@ import type { Client } from '@/types/database'
 interface Props {
   clients: Client[]
   projectCountByClient: Record<string, number>
+  keyClients?: Client[]
 }
 
 const SECTOR_MAP: Record<string, { label: string; color: string }> = {
@@ -31,7 +32,7 @@ function getSector(website: string | null) {
   return domain ? SECTOR_MAP[domain] : null
 }
 
-export default function ClientsClient({ clients, projectCountByClient }: Props) {
+export default function ClientsClient({ clients, projectCountByClient, keyClients = [] }: Props) {
   const [search, setSearch] = useState('')
   const [activeSector, setActiveSector] = useState('')
 
@@ -57,6 +58,36 @@ export default function ClientsClient({ clients, projectCountByClient }: Props) 
 
   return (
     <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+      {/* Key Clients strip */}
+      {keyClients.length > 0 && (
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-1 h-5 rounded-full bg-blue-600 inline-block" />
+            <h2 className="text-[13px] font-bold text-slate-800 uppercase tracking-[0.1em]">Key Clients</h2>
+            <span className="text-[12px] text-slate-400 font-medium ml-1">— ลูกค้าหลักที่ไว้วางใจ</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            {keyClients.map((client) => (
+              <div
+                key={client.id}
+                className="bg-white rounded-2xl p-4 border border-blue-100/80 flex flex-col items-center gap-2.5 text-center transition-all duration-200"
+                style={{ boxShadow: '0 2px 12px rgba(30,58,138,0.07)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-md)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(30,58,138,0.07)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
+              >
+                <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {client.logo
+                    ? <img src={client.logo} alt={client.name} className="w-8 h-8 object-contain" />
+                    : <Building2 size={18} className="text-blue-200" strokeWidth={1.5} />}
+                </div>
+                <p className="text-[12px] font-semibold text-slate-800 leading-snug line-clamp-2">{client.name}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 border-t border-slate-100" />
+        </div>
+      )}
 
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-2.5 mb-5">

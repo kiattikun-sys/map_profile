@@ -9,6 +9,7 @@ import { getProjectCoverImage, getTypeGradient } from '@/lib/project-utils'
 interface Props {
   projects: Project[]
   typeCount: Record<string, number>
+  featuredProjects?: Project[]
 }
 
 const TYPE_CHIP_COLORS: Record<string, string> = {
@@ -30,10 +31,11 @@ const SORT_OPTIONS = [
   { value: 'name_asc',   label: 'ชื่อ A–Z' },
 ]
 
-export default function ProjectsClient({ projects, typeCount }: Props) {
+export default function ProjectsClient({ projects, typeCount, featuredProjects = [] }: Props) {
   const [activeType, setActiveType] = useState('')
   const [sort, setSort] = useState('year_desc')
   const [search, setSearch] = useState('')
+  const [showFeatured, setShowFeatured] = useState(true)
 
   const filtered = useMemo(() => {
     let list = [...projects]
@@ -49,6 +51,62 @@ export default function ProjectsClient({ projects, typeCount }: Props) {
 
   return (
     <div className="flex-1 pt-10 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+
+      {/* Featured Projects section */}
+      {featuredProjects.length > 0 && (
+        <div className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="w-1 h-5 rounded-full bg-amber-500 inline-block" />
+              <h2 className="text-[13px] font-bold text-slate-800 uppercase tracking-[0.1em]">Featured Projects</h2>
+              <span className="text-[12px] text-slate-400 font-medium ml-1">— โครงการเด่นที่แนะนำ</span>
+            </div>
+            <button
+              onClick={() => setShowFeatured((v) => !v)}
+              className="text-[12px] text-blue-700 hover:text-blue-900 font-semibold transition-colors"
+            >
+              {showFeatured ? 'ซ่อน' : 'แสดง'}
+            </button>
+          </div>
+          {showFeatured && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+              {featuredProjects.map((project) => {
+                const coverUrl = getProjectCoverImage(project.images)
+                const gradient = getTypeGradient(project.project_type)
+                return (
+                  <a
+                    key={project.id}
+                    href={`/projects/${project.id}`}
+                    className="bg-white rounded-2xl overflow-hidden border border-amber-100/80 group transition-all duration-300"
+                    style={{ boxShadow: '0 2px 12px rgba(217,119,6,0.08)' }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-lg)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(217,119,6,0.08)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
+                  >
+                    <div className={`h-36 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
+                      {coverUrl
+                        ? <img src={coverUrl} alt={project.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        : <div className="flex items-center justify-center h-full"><MapPin size={32} className="text-white/25" /></div>
+                      }
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                      <span className="absolute top-2 right-2 bg-amber-400/90 text-white text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">★ Featured</span>
+                      {project.project_type && (
+                        <span className="absolute bottom-2 left-2 bg-white/20 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full font-semibold border border-white/20">{project.project_type}</span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-slate-900 leading-snug text-[13px] tracking-[-0.01em] line-clamp-2 group-hover:text-blue-800 transition-colors">{project.name}</h3>
+                      {project.province && (
+                        <p className="text-[11.5px] text-slate-400 mt-1.5 flex items-center gap-1"><MapPin size={9} strokeWidth={2} />{project.province} {project.year && `· ${project.year}`}</p>
+                      )}
+                    </div>
+                  </a>
+                )
+              })}
+            </div>
+          )}
+          <div className="border-t border-slate-100 mb-8" />
+        </div>
+      )}
 
       {/* Filter bar */}
       <div className="flex flex-col sm:flex-row gap-2.5 mb-5">

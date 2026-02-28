@@ -4,6 +4,7 @@ import type { Project } from '@/types/database'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ProjectsClient from '@/components/ProjectsClient'
+import { getSiteSection, getSiteAssetUrl, getFeaturedProjects } from '@/lib/site-content'
 
 export const metadata: Metadata = {
   title: 'โครงการทั้งหมด',
@@ -17,6 +18,11 @@ export const metadata: Metadata = {
 export const revalidate = 60
 
 export default async function ProjectsPage() {
+  const [section, featuredProjects] = await Promise.all([
+    getSiteSection('projects'),
+    getFeaturedProjects(),
+  ])
+  const heroImageUrl = getSiteAssetUrl(section.image_path)
   const { data: projectsRaw } = await supabase
     .from('projects')
     .select('*')
@@ -36,26 +42,24 @@ export default async function ProjectsPage() {
 
       {/* Hero */}
       <div className="pt-[60px] relative text-white overflow-hidden" style={{ minHeight: '320px' }}>
-        {/* Background image via Unsplash - landscape architecture/urban design */}
+        {/* Background image — CMS or Unsplash fallback */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=80&auto=format&fit=crop')` }}
+          style={{ backgroundImage: `url('${heroImageUrl ?? 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=80&auto=format&fit=crop'}')` }}
         />
-        {/* Multi-layer overlay for readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/85 to-blue-900/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-blue-950/60 via-transparent to-transparent" />
-        {/* Decorative grid */}
         <div className="absolute inset-0 opacity-[0.06]" style={{
           backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
           backgroundSize: '48px 48px'
         }} />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <p className="brand-label">ผลงานของเรา — TRIPIRA</p>
+          <p className="brand-label">{section.subtitle ?? 'ผลงานของเรา — TRIPIRA'}</p>
           <div className="brand-divider opacity-60" />
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.02em] leading-tight">โครงการทั้งหมด</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.02em] leading-tight">{section.title ?? 'โครงการทั้งหมด'}</h1>
           <p className="text-blue-100/80 text-[15px] max-w-lg leading-relaxed mb-10">
-            ผลงานภูมิสถาปัตยกรรม วิศวกรรม และสำรวจ ทั่วทุกภาคของประเทศไทย
+            {section.description ?? 'ผลงานภูมิสถาปัตยกรรม วิศวกรรม และสำรวจ ทั่วทุกภาคของประเทศไทย'}
           </p>
           {/* Stats strip */}
           <div className="flex flex-wrap gap-8">
@@ -77,7 +81,7 @@ export default async function ProjectsPage() {
         </div>
       </div>
 
-      <ProjectsClient projects={projects} typeCount={typeCount} />
+      <ProjectsClient projects={projects} typeCount={typeCount} featuredProjects={featuredProjects} />
 
       <Footer />
     </div>
