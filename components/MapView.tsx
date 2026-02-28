@@ -36,6 +36,7 @@ interface FlyToTarget {
 export interface MapViewHandle {
   cleanupOverlay: (projectId: string) => void
   resize: () => void
+  getMap: () => mapboxgl.Map | null
 }
 
 interface MapViewProps {
@@ -286,6 +287,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
   useImperativeHandle(ref, () => ({
     cleanupOverlay,
     resize: () => mapRef.current?.resize(),
+    getMap: () => mapRef.current,
   }), [cleanupOverlay])
 
   // Overlay management — controlled by parent via overlayVisible + overlayProject

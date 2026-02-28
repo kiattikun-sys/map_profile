@@ -12,6 +12,19 @@ import { Loader2, Layers, MapPin, Building2, ChevronRight, X } from 'lucide-reac
 import type { HomepageBanner } from '@/lib/site-content'
 import { getSiteAssetUrl } from '@/lib/site-content'
 import type { MapViewHandle } from './MapView'
+import type mapboxgl from 'mapbox-gl'
+
+interface ProjectModel {
+  project_id: string
+  model_path: string
+  anchor_lng: number
+  anchor_lat: number
+  altitude_m: number
+  rotation_z_deg: number
+  scale: number
+}
+
+const ThreeDModelLayer = dynamic(() => import('./ThreeDModelLayer'), { ssr: false })
 
 // dynamic with ssr:false but we need forwardRef — use a named export wrapper
 const MapView = dynamic(
@@ -45,6 +58,21 @@ export default function MapPageClient({ banner }: Props) {
   const [activeLayers, setActiveLayers] = useState({ overlay: false })
   const [overlayOpacity, setOverlayOpacity] = useState(0.7)
   const mapViewRef = useRef<MapViewHandle>(null)
+
+  // 3D model state
+  const [activeModel, setActiveModel] = useState<ProjectModel | null>(null)
+  const [mapInstance, setMapInstance] = useState<mapboxgl.Map | null>(null)
+
+  const handleView3D = useCallback((model: ProjectModel) => {
+    const map = mapViewRef.current?.getMap() ?? null
+    setMapInstance(map)
+    setActiveModel(model)
+  }, [])
+
+  const handleExit3D = useCallback(() => {
+    setActiveModel(null)
+    setMapInstance(null)
+  }, [])
 
   const handleSelectProject = useCallback((project: Project) => {
     // Cleanup overlay for previous project if different
@@ -253,9 +281,19 @@ export default function MapPageClient({ banner }: Props) {
           onToggleOverlay={(v) => setActiveLayers((l) => ({ ...l, overlay: v }))}
           overlayOpacity={overlayOpacity}
           onOpacityChange={setOverlayOpacity}
+          onView3D={handleView3D}
         />
 
         <div className={`flex-1 relative transition-all duration-300 ${panelOpen ? 'md:ml-[440px]' : ''}`}>
+          {/* 3D Model Layer — rendered over map when active */}
+          {activeModel && mapInstance && (
+            <ThreeDModelLayer
+              map={mapInstance}
+              model={activeModel}
+              onExit={handleExit3D}
+            />
+          )}
+
           {loading ? (
             <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-50 to-gray-100">
               <div className="text-center">

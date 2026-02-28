@@ -1,13 +1,24 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X, MapPin, Calendar, Tag, ExternalLink,
-  ChevronLeft, ChevronRight, Layers, Eye, EyeOff,
+  ChevronLeft, ChevronRight, Layers, Eye, EyeOff, Box,
 } from 'lucide-react'
 import type { Project } from '@/types/database'
 import { getProjectCoverImage, getProjectImageUrl, getTypeGradient } from '@/lib/project-utils'
+import { supabase } from '@/lib/supabase'
+
+interface ProjectModel {
+  project_id: string
+  model_path: string
+  anchor_lng: number
+  anchor_lat: number
+  altitude_m: number
+  rotation_z_deg: number
+  scale: number
+}
 
 interface ActiveLayers {
   overlay: boolean
@@ -21,6 +32,7 @@ interface Props {
   onToggleOverlay: (v: boolean) => void
   overlayOpacity: number
   onOpacityChange: (v: number) => void
+  onView3D?: (model: ProjectModel) => void
 }
 
 export default function ProjectSidePanel({
@@ -31,11 +43,29 @@ export default function ProjectSidePanel({
   onToggleOverlay,
   overlayOpacity,
   onOpacityChange,
+  onView3D,
 }: Props) {
   const [imgIndex, setImgIndex] = useState(0)
+  const [projectModel, setProjectModel] = useState<ProjectModel | null>(null)
+  const [modelLoading, setModelLoading] = useState(false)
 
   // reset image index when project changes
   useEffect(() => { setImgIndex(0) }, [project?.id])
+
+  // fetch project_models record when project changes
+  useEffect(() => {
+    if (!project?.id) { setProjectModel(null); return }
+    setModelLoading(true)
+    supabase
+      .from('project_models')
+      .select('*')
+      .eq('project_id', project.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setProjectModel(data as ProjectModel | null)
+        setModelLoading(false)
+      })
+  }, [project?.id])
 
   // ESC to close
   useEffect(() => {
@@ -205,6 +235,43 @@ export default function ProjectSidePanel({
                   <h3 className="text-[12px] font-bold text-slate-700 uppercase tracking-[0.08em]">
                     ชั้นข้อมูลโครงการ
                   </h3>
+                </div>
+
+                {/* 3D Model button */}
+                <div className={`rounded-xl border p-3.5 mb-3 transition-colors ${
+                  projectModel ? 'border-indigo-200 bg-indigo-50/60' : 'border-slate-100 bg-slate-50/30'
+                }`}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        projectModel ? 'bg-indigo-100' : 'bg-slate-100'
+                      }`}>
+                        <Box size={14} className={projectModel ? 'text-indigo-600' : 'text-slate-400'} />
+                      </div>
+                      <div>
+                        <p className={`text-[13px] font-semibold leading-none ${
+                          projectModel ? 'text-slate-800' : 'text-slate-400'
+                        }`}>โมเดล 3D</p>
+                        {!projectModel && !modelLoading && (
+                          <p className="text-[11px] text-slate-400 mt-0.5">ยังไม่มีโมเดล</p>
+                        )}
+                        {modelLoading && (
+                          <p className="text-[11px] text-slate-400 mt-0.5">กำลังตรวจสอบ...</p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      disabled={!projectModel || modelLoading}
+                      onClick={() => projectModel && onView3D?.(projectModel)}
+                      className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors ${
+                        projectModel && !modelLoading
+                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                          : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                      }`}
+                    >
+                      View 3D
+                    </button>
+                  </div>
                 </div>
 
                 {/* Overlay toggle row */}

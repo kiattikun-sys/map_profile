@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import {
   MapPin, Plus, LogOut, Edit2, Trash2, Search,
   LayoutDashboard, Users, FolderOpen, ChevronRight, X,
-  FileText, Megaphone, Star
+  FileText, Megaphone, Star, Box
 } from 'lucide-react'
 import AdminProjectForm from './AdminProjectForm'
 import AdminClientForm from './AdminClientForm'
@@ -140,6 +140,17 @@ export default function AdminDashboard({ initialProjects, initialClients }: Admi
           >
             <Star size={17} />
             Featured & Key
+            <ChevronRight size={13} className="ml-auto" />
+          </a>
+
+          {/* 3D */}
+          <p className="px-3 py-1.5 mt-3 text-[10px] font-bold text-gray-500 uppercase tracking-[0.1em]">3D</p>
+          <a
+            href="/admin/model"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+          >
+            <Box size={17} />
+            3D Models
             <ChevronRight size={13} className="ml-auto" />
           </a>
         </nav>
