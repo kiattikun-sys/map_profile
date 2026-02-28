@@ -167,7 +167,7 @@ export default function MapPageClient({ banner }: Props) {
           }} />
           <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-blue-600/20 to-transparent" />
 
-          <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-6">
+          <div className="relative w-full px-6 sm:px-10 lg:px-16 flex items-center justify-between gap-6">
             {/* Left: brand + tagline */}
             <div className="flex items-center gap-4 min-w-0">
               <div className="hidden sm:flex flex-col items-start">
