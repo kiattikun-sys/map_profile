@@ -30,20 +30,21 @@ export default async function ClientsPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
       <Navbar />
-      <div className="pt-16 bg-gradient-to-br from-blue-700 to-blue-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">
-            ลูกค้าของเรา
-          </span>
-          <h1 className="text-4xl font-bold mb-3">ลูกค้าของเรา</h1>
-          <p className="text-blue-100 text-lg">
-            หน่วยงานรัฐชั้นนำและบริษัทเอกชนระดับประเทศที่ไว้วางใจในคุณภาพงานของเรา
+      <div className="pt-[60px] brand-hero-gradient text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <p className="brand-label">ลูกค้าของเรา — TRIPIRA</p>
+          <div className="brand-divider opacity-60" />
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.02em] leading-tight">พาร์ทเนอร์ชั้นนำ</h1>
+          <p className="text-blue-200/80 text-[15px] max-w-lg leading-relaxed">
+            หน่วยงานภาครัฐชั้นนำและบริษัทเอกชนระดับประเทศที่ไว้วางใจในคุณภาพงานของเรา
           </p>
-          <div className="flex items-center gap-2 mt-6">
-            <span className="text-2xl font-bold">{clients.length}</span>
-            <span className="text-blue-200 text-sm">ลูกค้าและพาร์ทเนอร์</span>
+          <div className="flex flex-wrap gap-8 mt-10">
+            <div>
+              <p className="text-3xl font-black tracking-[-0.03em]">{clients.length}</p>
+              <p className="text-[12px] text-blue-300/70 mt-0.5 uppercase tracking-widest font-medium">ลูกค้าและพาร์ทเนอร์</p>
+            </div>
           </div>
         </div>
       </div>

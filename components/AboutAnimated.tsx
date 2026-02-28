@@ -73,26 +73,25 @@ function Section({ children, className = '' }: { children: React.ReactNode; clas
 
 export default function AboutAnimated() {
   return (
-    <div className="pt-16 flex-1">
+    <div className="pt-[60px] flex-1">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-blue-700 via-blue-800 to-blue-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="brand-hero-gradient text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-22">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.52, ease: [0.25, 0.1, 0.25, 1] }}
             className="max-w-3xl"
           >
-            <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-4">
-              TRIPIRA CO., LTD. · บริษัท ไตรพีระ จำกัด
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
+            <p className="brand-label">TRIPIRA CO., LTD. · บริษัท ไตรพีระ จำกัด</p>
+            <div className="brand-divider opacity-60" />
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-5 tracking-[-0.025em]">
               ออกแบบพื้นที่สาธารณะ<br className="hidden md:block" />
               ระดับชาติ ด้วยความเชี่ยวชาญจริง
             </h1>
-            <p className="text-lg text-blue-100 leading-relaxed">
+            <p className="text-[15px] text-blue-200/80 leading-relaxed max-w-2xl">
               บริษัทวิศวกรรมและภูมิสถาปัตยกรรมที่ได้รับความไว้วางใจจากหน่วยงานรัฐชั้นนำ
-              อาทิ กรมโยธาธิการและผังเมือง Bangchak PTT และ Lotus's
+              อาทิ กรมโยธาธิการและผังเมือง Bangchak PTT และ Lotus’s
               ด้วยผลงานมูลค่ารวมกว่า 1,500 ล้านบาททั่วประเทศ
             </p>
           </motion.div>
@@ -111,18 +110,20 @@ export default function AboutAnimated() {
             <motion.div
               key={stat.label}
               variants={fadeUp}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center hover:shadow-md hover:-translate-y-0.5 transition-all"
+              className="bg-white rounded-2xl p-6 border border-slate-200/60 text-center transition-all duration-300"
+              style={{ boxShadow: 'var(--shadow-md)' }}
+              whileHover={{ y: -2, boxShadow: 'var(--shadow-lg)' }}
             >
-              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 ${
-                stat.color === 'blue'   ? 'bg-blue-100 text-blue-700' :
-                stat.color === 'green'  ? 'bg-green-100 text-green-700' :
-                stat.color === 'purple' ? 'bg-purple-100 text-purple-700' :
-                'bg-amber-100 text-amber-700'
+              <div className={`inline-flex items-center justify-center w-11 h-11 rounded-xl mb-3 ${
+                stat.color === 'blue'   ? 'bg-blue-50 text-blue-700' :
+                stat.color === 'green'  ? 'bg-emerald-50 text-emerald-700' :
+                stat.color === 'purple' ? 'bg-violet-50 text-violet-700' :
+                'bg-amber-50 text-amber-600'
               }`}>
-                <stat.icon size={22} />
+                <stat.icon size={20} strokeWidth={1.8} />
               </div>
-              <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+              <p className="text-3xl font-black text-slate-900 tracking-[-0.03em]">{stat.value}</p>
+              <p className="text-[12.5px] text-slate-500 mt-1 leading-snug">{stat.label}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -133,36 +134,36 @@ export default function AboutAnimated() {
         {/* Mission & Vision */}
         <Section>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                <div className="w-9 h-9 bg-blue-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Target size={18} className="text-white" />
+            <div className="bg-white rounded-2xl p-8 border border-slate-200/60" style={{ boxShadow: 'var(--shadow-md)' }}>
+              <h2 className="text-[17px] font-bold text-slate-900 mb-4 flex items-center gap-3 tracking-[-0.01em]">
+                <div className="w-9 h-9 bg-blue-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Target size={16} className="text-white" strokeWidth={2} />
                 </div>
                 พันธกิจของเรา
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-3">
+              <p className="text-[13.5px] text-slate-600 leading-relaxed mb-3">
                 บริษัท ไตรพีระ จำกัด มุ่งมั่นออกแบบและพัฒนาพื้นที่สาธารณะ
                 ภูมิทัศน์เมือง และโครงสร้างพื้นฐานให้มีคุณภาพสูงสุด
                 ตอบสนองความต้องการของชุมชนและหน่วยงานรัฐอย่างแท้จริง
               </p>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-[13.5px] text-slate-600 leading-relaxed">
                 เราเน้นความแม่นยำในการสำรวจ ความสร้างสรรค์ในการออกแบบ
                 และความรับผิดชอบในการส่งมอบงานตรงเวลาและงบประมาณ
               </p>
             </div>
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Eye size={18} className="text-white" />
+            <div className="bg-white rounded-2xl p-8 border border-slate-200/60" style={{ boxShadow: 'var(--shadow-md)' }}>
+              <h2 className="text-[17px] font-bold text-slate-900 mb-4 flex items-center gap-3 tracking-[-0.01em]">
+                <div className="w-9 h-9 bg-emerald-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Eye size={16} className="text-white" strokeWidth={2} />
                 </div>
                 วิสัยทัศน์
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-3">
+              <p className="text-[13.5px] text-slate-600 leading-relaxed mb-3">
                 เป็นบริษัทออกแบบภูมิสถาปัตยกรรมและวิศวกรรมชั้นนำของไทย
                 ที่บูรณาการเทคโนโลยี GIS Drone Survey และ Digital Platform
                 เข้ากับงานออกแบบระดับชาติ
               </p>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-[13.5px] text-slate-600 leading-relaxed">
                 สร้างพื้นที่สาธารณะที่มีคุณค่า ยั่งยืน และเป็นที่ภาคภูมิใจ
                 ของชุมชน ท้องถิ่น และประเทศ
               </p>
@@ -172,8 +173,11 @@ export default function AboutAnimated() {
 
         {/* Services */}
         <Section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">บริการของเรา</h2>
-          <p className="text-gray-500 mb-8">ครอบคลุมทุกด้านของงานวิศวกรรมและก่อสร้าง</p>
+          <div>
+            <h2 className="text-[22px] font-bold text-slate-900 mb-1 tracking-[-0.02em]">บริการของเรา</h2>
+            <div className="brand-divider" />
+          </div>
+          <p className="text-[13.5px] text-slate-500 mb-8 -mt-4">ครอบคลุมทุกด้านของงานวิศวกรรมและก่อสร้าง</p>
           <motion.div
             variants={stagger}
             initial="hidden"
@@ -185,13 +189,15 @@ export default function AboutAnimated() {
               <motion.div
                 key={s.title}
                 variants={fadeUp}
-                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+                className="bg-white rounded-2xl p-5 border border-slate-200/60 transition-all duration-300 group"
+                style={{ boxShadow: 'var(--shadow-sm)' }}
+                whileHover={{ y: -2, boxShadow: 'var(--shadow-md)', borderColor: '#bfdbfe' }}
               >
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-blue-100 transition-colors">
-                  <s.icon size={20} className="text-blue-700" />
+                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-blue-100 transition-colors duration-200">
+                  <s.icon size={18} className="text-blue-800" strokeWidth={1.8} />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1.5">{s.title}</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">{s.desc}</p>
+                <h3 className="font-semibold text-slate-900 mb-1.5 text-[14px] tracking-[-0.01em]">{s.title}</h3>
+                <p className="text-[12.5px] text-slate-500 leading-relaxed">{s.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -199,10 +205,13 @@ export default function AboutAnimated() {
 
         {/* Timeline */}
         <Section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">เส้นทางของเรา</h2>
-          <p className="text-gray-500 mb-8">จากจุดเริ่มต้นสู่บริษัทวิศวกรรมชั้นนำ</p>
+          <div>
+            <h2 className="text-[22px] font-bold text-slate-900 mb-1 tracking-[-0.02em]">เส้นทางของเรา</h2>
+            <div className="brand-divider" />
+          </div>
+          <p className="text-[13.5px] text-slate-500 mb-8 -mt-4">จากจุดเริ่มต้นสู่บริษัทวิศวกรรมชั้นนำ</p>
           <div className="relative">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-blue-100 hidden md:block" />
+            <div className="absolute left-6 top-0 bottom-0 w-px bg-slate-200 hidden md:block" />
             <motion.div
               variants={stagger}
               initial="hidden"
@@ -212,15 +221,15 @@ export default function AboutAnimated() {
             >
               {MILESTONES.map((m, i) => (
                 <motion.div key={m.year} variants={fadeUp} className="flex gap-6">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-700 text-white flex items-center justify-center text-xs font-bold shadow-md z-10">
+                  <div className="flex-shrink-0 w-11 h-11 rounded-full bg-blue-800 text-white flex items-center justify-center text-[11px] font-black z-10 tracking-tight" style={{ boxShadow: '0 2px 10px rgba(30,58,138,0.3)' }}>
                     {m.year.slice(2)}
                   </div>
-                  <div className={`flex-1 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 ${i % 2 !== 0 ? 'border-l-4 border-l-blue-200' : ''}`}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">{m.year}</span>
-                      <h3 className="font-semibold text-gray-900">{m.title}</h3>
+                  <div className="flex-1 bg-white rounded-2xl p-5 border border-slate-200/60" style={{ boxShadow: 'var(--shadow-sm)' }}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">{m.year}</span>
+                      <h3 className="font-semibold text-slate-900 text-[14px] tracking-[-0.01em]">{m.title}</h3>
                     </div>
-                    <p className="text-sm text-gray-500">{m.desc}</p>
+                    <p className="text-[13px] text-slate-500 leading-relaxed">{m.desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -230,8 +239,11 @@ export default function AboutAnimated() {
 
         {/* Team */}
         <Section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">ทีมผู้บริหาร</h2>
-          <p className="text-gray-500 mb-8">ผู้เชี่ยวชาญด้านวิศวกรรม ภูมิสถาปัตย์ และงานสำรวจ</p>
+          <div>
+            <h2 className="text-[22px] font-bold text-slate-900 mb-1 tracking-[-0.02em]">ทีมผู้บริหาร</h2>
+            <div className="brand-divider" />
+          </div>
+          <p className="text-[13.5px] text-slate-500 mb-8 -mt-4">ผู้เชี่ยวชาญด้านวิศวกรรม ภูมิสถาปัตย์ และงานสำรวจ</p>
           <motion.div
             variants={stagger}
             initial="hidden"
@@ -243,15 +255,17 @@ export default function AboutAnimated() {
               <motion.div
                 key={t.name}
                 variants={fadeUp}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-all"
+                className="bg-white rounded-2xl p-5 border border-slate-200/60 flex items-center gap-4 transition-all duration-300"
+                style={{ boxShadow: 'var(--shadow-sm)' }}
+                whileHover={{ y: -2, boxShadow: 'var(--shadow-md)' }}
               >
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-700 to-red-900 flex items-center justify-center flex-shrink-0">
-                  <GraduationCap size={24} className="text-white" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-800 to-blue-900 flex items-center justify-center flex-shrink-0" style={{ boxShadow: '0 2px 8px rgba(30,58,138,0.25)' }}>
+                  <GraduationCap size={20} className="text-white" strokeWidth={1.8} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 leading-snug mb-0.5">{t.name}</h3>
-                  <p className="text-sm text-red-700 font-medium mb-1">{t.role}</p>
-                  <p className="text-xs text-gray-400 flex items-center gap-1"><Phone size={10} /> {t.exp}</p>
+                  <h3 className="font-semibold text-slate-900 leading-snug mb-0.5 text-[14px] tracking-[-0.01em]">{t.name}</h3>
+                  <p className="text-[12.5px] text-blue-700 font-semibold mb-1">{t.role}</p>
+                  <p className="text-[12px] text-slate-400 flex items-center gap-1"><Phone size={10} strokeWidth={2} /> {t.exp}</p>
                 </div>
               </motion.div>
             ))}
@@ -260,8 +274,9 @@ export default function AboutAnimated() {
 
         {/* Certifications */}
         <Section>
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">ความเชี่ยวชาญและจุดแข็ง</h2>
+          <div className="bg-white rounded-2xl p-8 border border-slate-200/60" style={{ boxShadow: 'var(--shadow-md)' }}>
+            <h2 className="text-[22px] font-bold text-slate-900 mb-1 tracking-[-0.02em]">ความเชี่ยวชาญและจุดแข็ง</h2>
+            <div className="brand-divider mb-6" />
             <motion.div
               variants={stagger}
               initial="hidden"
@@ -273,10 +288,10 @@ export default function AboutAnimated() {
                 <motion.div
                   key={c}
                   variants={fadeUp}
-                  className="flex items-start gap-3 p-4 rounded-xl bg-green-50 border border-green-100 hover:bg-green-100 transition-colors"
+                  className="flex items-start gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200/60 hover:bg-blue-50 hover:border-blue-100 transition-colors duration-200"
                 >
-                  <CheckCircle2 size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 font-medium">{c}</span>
+                  <CheckCircle2 size={15} className="text-blue-700 flex-shrink-0 mt-0.5" strokeWidth={2} />
+                  <span className="text-[13px] text-slate-700 font-medium leading-snug">{c}</span>
                 </motion.div>
               ))}
             </motion.div>

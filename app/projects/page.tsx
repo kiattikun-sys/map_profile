@@ -31,33 +31,32 @@ export default async function ProjectsPage() {
   const provinces = [...new Set(projects.map((p) => p.province).filter(Boolean))].length
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
       <Navbar />
 
       {/* Hero */}
-      <div className="pt-16 bg-gradient-to-br from-blue-700 via-blue-800 to-blue-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">
-            TRIPIRA — ผลงานของเรา
-          </span>
-          <h1 className="text-4xl font-bold mb-3">โครงการทั้งหมด</h1>
-          <p className="text-blue-100 text-lg">
+      <div className="pt-[60px] brand-hero-gradient text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <p className="brand-label">ผลงานของเรา — TRIPIRA</p>
+          <div className="brand-divider opacity-60" />
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.02em] leading-tight">โครงการทั้งหมด</h1>
+          <p className="text-blue-200/80 text-[15px] max-w-lg leading-relaxed">
             ผลงานภูมิสถาปัตยกรรม วิศวกรรม และสำรวจ ทั่วทุกภาคของประเทศไทย
           </p>
-          <div className="flex flex-wrap gap-6 mt-8">
-            <div className="text-center">
-              <p className="text-3xl font-bold">{projects.length}</p>
-              <p className="text-sm text-blue-200">โครงการทั้งหมด</p>
+          <div className="flex flex-wrap gap-8 mt-10">
+            <div>
+              <p className="text-3xl font-black tracking-[-0.03em]">{projects.length}</p>
+              <p className="text-[12px] text-blue-300/70 mt-0.5 uppercase tracking-widest font-medium">โครงการ</p>
             </div>
-            <div className="w-px bg-blue-600" />
-            <div className="text-center">
-              <p className="text-3xl font-bold">{provinces}</p>
-              <p className="text-sm text-blue-200">จังหวัดทั่วประเทศ</p>
+            <div className="w-px bg-white/10" />
+            <div>
+              <p className="text-3xl font-black tracking-[-0.03em]">{provinces}</p>
+              <p className="text-[12px] text-blue-300/70 mt-0.5 uppercase tracking-widest font-medium">จังหวัด</p>
             </div>
-            <div className="w-px bg-blue-600" />
-            <div className="text-center">
-              <p className="text-3xl font-bold">{Object.keys(typeCount).length}</p>
-              <p className="text-sm text-blue-200">ประเภทงาน</p>
+            <div className="w-px bg-white/10" />
+            <div>
+              <p className="text-3xl font-black tracking-[-0.03em]">{Object.keys(typeCount).length}</p>
+              <p className="text-[12px] text-blue-300/70 mt-0.5 uppercase tracking-widest font-medium">ประเภทงาน</p>
             </div>
           </div>
         </div>

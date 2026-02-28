@@ -14,13 +14,14 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
       <Navbar />
-      <div className="pt-16 bg-gradient-to-br from-blue-700 to-blue-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-300 mb-3">ติดต่อเรา</span>
-          <h1 className="text-4xl font-bold mb-3">ติดต่อ TRIPIRA</h1>
-          <p className="text-blue-100 text-lg">บริษัท ไตรพีระ จำกัด — พร้อมรับฟังความต้องการด้านวิศวกรรมและภูมิสถาปัตยกรรมทุกรูปแบบ</p>
+      <div className="pt-[60px] brand-hero-gradient text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <p className="brand-label">ติดต่อเรา — TRIPIRA</p>
+          <div className="brand-divider opacity-60" />
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-[-0.02em] leading-tight">ติดต่อ TRIPIRA</h1>
+          <p className="text-blue-200/80 text-[15px] max-w-lg leading-relaxed">บริษัท ไตรพีระ จำกัด — พร้อมรับฟังความต้องการด้านวิศวกรรมและภูมิสถาปัตยกรรมทุกรูปแบบ</p>
         </div>
       </div>
       <ContactClient />

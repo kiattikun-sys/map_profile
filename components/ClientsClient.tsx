@@ -56,43 +56,44 @@ export default function ClientsClient({ clients, projectCountByClient }: Props) 
   }, [clients, search, activeSector])
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-2.5 mb-5">
         <div className="relative max-w-xs flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" strokeWidth={2} />
           <input
             type="text"
             placeholder="ค้นหาลูกค้า..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-8 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full pl-8 pr-8 py-2 text-[13px] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-400 bg-white transition-all duration-200"
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-              <X size={13} />
+            <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <X size={12} />
             </button>
           )}
         </div>
-        <span className="flex items-center text-sm text-gray-500 ml-auto">
-          <span className="font-semibold text-gray-900">{filtered.length}</span>
+        <span className="flex items-center text-[13px] text-slate-500 ml-auto">
+          <span className="font-semibold text-slate-800">{filtered.length}</span>
           <span className="ml-1">ลูกค้า</span>
         </span>
       </div>
 
       {/* Sector chips */}
       {sectors.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap gap-1.5 mb-7">
           <button
             onClick={() => setActiveSector('')}
-            className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${
+            className={`text-[12px] px-3 py-1.5 rounded-full border font-semibold transition-all duration-200 ${
               !activeSector
-                ? 'bg-blue-700 text-white border-blue-700'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600'
+                ? 'bg-blue-800 text-white border-blue-800'
+                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'
             }`}
+            style={!activeSector ? { boxShadow: '0 2px 8px rgba(30,58,138,0.2)' } : {}}
           >
-            ทั้งหมด ({clients.length})
+            ทั้งหมด <span className="opacity-60">({clients.length})</span>
           </button>
           {sectors.map((s) => {
             const count = clients.filter((c) => getSector(c.website)?.label === s).length
@@ -100,13 +101,14 @@ export default function ClientsClient({ clients, projectCountByClient }: Props) 
               <button
                 key={s}
                 onClick={() => setActiveSector(activeSector === s ? '' : s)}
-                className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-all ${
+                className={`text-[12px] px-3 py-1.5 rounded-full border font-semibold transition-all duration-200 ${
                   activeSector === s
-                    ? 'bg-blue-700 text-white border-blue-700'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600'
+                    ? 'bg-blue-800 text-white border-blue-800'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'
                 }`}
+                style={activeSector === s ? { boxShadow: '0 2px 8px rgba(30,58,138,0.2)' } : {}}
               >
-                {s} ({count})
+                {s} <span className="opacity-50">({count})</span>
               </button>
             )
           })}
@@ -122,41 +124,44 @@ export default function ClientsClient({ clients, projectCountByClient }: Props) 
             return (
               <div
                 key={client.id}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all flex flex-col"
+                className="bg-white rounded-2xl p-5 border border-slate-200/60 flex flex-col transition-all duration-400 group"
+                style={{ boxShadow: 'var(--shadow-sm)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-lg)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-sm)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
                     {client.logo ? (
-                      <img src={client.logo} alt={client.name} className="w-12 h-12 object-contain" />
+                      <img src={client.logo} alt={client.name} className="w-10 h-10 object-contain" />
                     ) : (
-                      <Building2 size={24} className="text-gray-300" />
+                      <Building2 size={20} className="text-slate-300" strokeWidth={1.5} />
                     )}
                   </div>
                   <div className="flex flex-col items-end gap-1.5">
                     {count && (
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium border border-blue-200">
+                      <span className="text-[11px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-semibold border border-blue-100">
                         {count} โครงการ
                       </span>
                     )}
                     {sector && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${BADGE_COLORS[sector.color] ?? 'bg-gray-100 text-gray-700 border-gray-200'}`}>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold border ${BADGE_COLORS[sector.color] ?? 'bg-gray-100 text-gray-700 border-gray-200'}`}>
                         {sector.label}
                       </span>
                     )}
                   </div>
                 </div>
-                <h3 className="font-semibold text-gray-900 leading-snug mb-2">{client.name}</h3>
+                <h3 className="font-semibold text-slate-900 leading-snug mb-1.5 text-[14px] tracking-[-0.01em]">{client.name}</h3>
                 {client.description && (
-                  <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">{client.description}</p>
+                  <p className="text-[12.5px] text-slate-500 line-clamp-2 mb-3 flex-1 leading-relaxed">{client.description}</p>
                 )}
                 {client.website && (
                   <a
                     href={client.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 hover:underline mt-auto"
+                    className="flex items-center gap-1.5 text-[12px] text-blue-600 hover:text-blue-800 hover:underline mt-auto transition-colors duration-150"
                   >
-                    <Globe size={11} /> {client.website.replace(/^https?:\/\//, '')}
+                    <Globe size={10} strokeWidth={2} /> {client.website.replace(/^https?:\/\//, '')}
                   </a>
                 )}
               </div>
@@ -164,12 +169,14 @@ export default function ClientsClient({ clients, projectCountByClient }: Props) 
           })}
         </div>
       ) : (
-        <div className="text-center py-20 text-gray-400">
-          <Building2 size={40} className="mx-auto mb-4 opacity-30" />
-          <p className="text-base font-medium text-gray-600">ไม่พบลูกค้าที่ตรงกัน</p>
+        <div className="text-center py-20">
+          <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Building2 size={24} className="text-slate-300" strokeWidth={1.5} />
+          </div>
+          <p className="text-[14px] font-semibold text-slate-600 mb-1.5">ไม่พบลูกค้าที่ตรงกัน</p>
           <button
             onClick={() => { setSearch(''); setActiveSector('') }}
-            className="mt-3 text-sm text-blue-600 hover:underline"
+            className="mt-2 text-[13px] text-blue-700 hover:text-blue-900 hover:underline transition-colors"
           >
             ล้างตัวกรอง
           </button>
