@@ -1,24 +1,33 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { Project, Client, FilterState } from '@/types/database'
 import { supabase } from '@/lib/supabase'
 import FilterPanel from './FilterPanel'
 import Navbar from './Navbar'
+import ProjectSidePanel from './ProjectSidePanel'
 import { Loader2, Layers, MapPin, Building2, ChevronRight, X } from 'lucide-react'
 import type { HomepageBanner } from '@/lib/site-content'
 import { getSiteAssetUrl } from '@/lib/site-content'
+import type { MapViewHandle } from './MapView'
 
-const MapView = dynamic(() => import('./MapView'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center w-full h-full bg-gray-100">
-      <Loader2 className="animate-spin text-blue-600" size={32} />
-    </div>
-  ),
-})
+// dynamic with ssr:false but we need forwardRef — use a named export wrapper
+const MapView = dynamic(
+  () => import('./MapView').then((m) => ({ default: m.default })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center w-full h-full bg-gray-100">
+        <Loader2 className="animate-spin text-blue-600" size={32} />
+      </div>
+    ),
+  }
+) as React.ForwardRefExoticComponent<
+  React.ComponentPropsWithoutRef<typeof import('./MapView')['default']> &
+  React.RefAttributes<MapViewHandle>
+>
 
 interface Props {
   banner?: HomepageBanner
@@ -29,6 +38,40 @@ export default function MapPageClient({ banner }: Props) {
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [heroDismissed, setHeroDismissed] = useState(false)
+
+  // Side panel + overlay state
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [panelOpen, setPanelOpen] = useState(false)
+  const [activeLayers, setActiveLayers] = useState({ overlay: false })
+  const [overlayOpacity, setOverlayOpacity] = useState(0.7)
+  const mapViewRef = useRef<MapViewHandle>(null)
+
+  const handleSelectProject = useCallback((project: Project) => {
+    // Cleanup overlay for previous project if different
+    if (selectedProject && selectedProject.id !== project.id) {
+      mapViewRef.current?.cleanupOverlay(selectedProject.id)
+    }
+    const hasOverlay = !!(project.overlay_image && project.overlay_bounds)
+    setSelectedProject(project)
+    setPanelOpen(true)
+    setActiveLayers({ overlay: hasOverlay })
+    setOverlayOpacity(0.7)
+  }, [selectedProject])
+
+  const handleClosePanel = useCallback(() => {
+    if (selectedProject) {
+      mapViewRef.current?.cleanupOverlay(selectedProject.id)
+    }
+    setPanelOpen(false)
+    setSelectedProject(null)
+    setActiveLayers({ overlay: false })
+  }, [selectedProject])
+
+  // Resize map after panel animation (300ms)
+  useEffect(() => {
+    const t = setTimeout(() => mapViewRef.current?.resize(), 320)
+    return () => clearTimeout(t)
+  }, [panelOpen])
 
   const searchParams = useSearchParams()
   const flyTo = useMemo(() => {
@@ -201,7 +244,18 @@ export default function MapPageClient({ banner }: Props) {
           </div>
         )}
 
-        <div className="flex-1 relative">
+        {/* Side panel — desktop left slide-in, mobile bottom sheet */}
+        <ProjectSidePanel
+          project={selectedProject}
+          open={panelOpen}
+          onClose={handleClosePanel}
+          activeLayers={activeLayers}
+          onToggleOverlay={(v) => setActiveLayers((l) => ({ ...l, overlay: v }))}
+          overlayOpacity={overlayOpacity}
+          onOpacityChange={setOverlayOpacity}
+        />
+
+        <div className={`flex-1 relative transition-all duration-300 ${panelOpen ? 'md:ml-[440px]' : ''}`}>
           {loading ? (
             <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-50 to-gray-100">
               <div className="text-center">
@@ -213,7 +267,17 @@ export default function MapPageClient({ banner }: Props) {
               </div>
             </div>
           ) : (
-            <MapView projects={projects} filters={activeFilters} flyTo={flyTo} />
+            <MapView
+              ref={mapViewRef}
+              projects={projects}
+              filters={activeFilters}
+              flyTo={flyTo}
+              onSelectProject={handleSelectProject}
+              selectedProjectId={selectedProject?.id ?? null}
+              overlayVisible={activeLayers.overlay}
+              overlayOpacity={overlayOpacity}
+              overlayProject={selectedProject}
+            />
           )}
         </div>
 

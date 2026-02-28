@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import { Project, FilterState } from '@/types/database'
-import ProjectCard from './ProjectCard'
 
 const TYPE_COLOR_MATCH: mapboxgl.Expression = [
   'match', ['get', 'project_type'],
@@ -34,19 +33,32 @@ interface FlyToTarget {
   zoom: number
 }
 
+export interface MapViewHandle {
+  cleanupOverlay: (projectId: string) => void
+  resize: () => void
+}
+
 interface MapViewProps {
   projects: Project[]
   filters: FilterState
   flyTo?: FlyToTarget | null
+  onSelectProject?: (project: Project) => void
+  selectedProjectId?: string | null
+  overlayVisible?: boolean
+  overlayOpacity?: number
+  overlayProject?: Project | null
 }
 
-export default function MapView({ projects, filters, flyTo }: MapViewProps) {
+const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
+  { projects, filters, flyTo, onSelectProject, selectedProjectId, overlayVisible, overlayOpacity = 0.7, overlayProject },
+  ref
+) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const projectsRef = useRef<Project[]>(projects)
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
   const flyToHandled = useRef(false)
+  const currentOverlayId = useRef<string | null>(null)
 
   const filteredProjects = projects.filter((p) => {
     if (filters.search && !p.name.toLowerCase().includes(filters.search.toLowerCase())) return false
@@ -179,7 +191,7 @@ export default function MapView({ projects, filters, flyTo }: MapViewProps) {
         const props = features[0].properties
         const project = projectsRef.current.find((p) => p.id === props?.id)
         if (!project) return
-        setSelectedProject(project)
+        onSelectProject?.(project)
         const geometry = features[0].geometry as GeoJSON.Point
         map.flyTo({
           center: geometry.coordinates as [number, number],
@@ -234,8 +246,15 @@ export default function MapView({ projects, filters, flyTo }: MapViewProps) {
     const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource | undefined
     if (!source) return
     source.setData(buildGeoJSON(filteredProjects))
-    setSelectedProject(null)
   }, [mapLoaded, filteredProjects, buildGeoJSON])
+
+  // Highlight selected marker
+  useEffect(() => {
+    if (!mapLoaded) return
+    const map = mapRef.current
+    if (!map) return
+    map.setFilter(LAYER_UNCLUSTERED_HOVER, ['==', ['get', 'id'], selectedProjectId ?? ''])
+  }, [mapLoaded, selectedProjectId])
 
   // flyTo — zoom to project location when arriving from project detail page
   useEffect(() => {
@@ -252,68 +271,89 @@ export default function MapView({ projects, filters, flyTo }: MapViewProps) {
     })
   }, [mapLoaded, flyTo])
 
-  const addOverlay = useCallback(() => {
+  // Helper: remove overlay for a given projectId
+  const cleanupOverlay = useCallback((projectId: string) => {
     const map = mapRef.current
-    if (!map || !selectedProject?.overlay_image || !selectedProject?.overlay_bounds) return
-
-    const bounds = selectedProject.overlay_bounds as {
-      topLeft: [number, number]
-      topRight: [number, number]
-      bottomRight: [number, number]
-      bottomLeft: [number, number]
-    }
-
-    const sourceId = `overlay-${selectedProject.id}`
-    const layerId = `overlay-layer-${selectedProject.id}`
-
+    if (!map) return
+    const layerId = `project:${projectId}:overlay-layer`
+    const sourceId = `project:${projectId}:overlay-source`
     if (map.getLayer(layerId)) map.removeLayer(layerId)
     if (map.getSource(sourceId)) map.removeSource(sourceId)
+    if (currentOverlayId.current === projectId) currentOverlayId.current = null
+  }, [])
 
-    const imageUrl = selectedProject.overlay_image.startsWith('http')
-      ? selectedProject.overlay_image
-      : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/overlay-images/${selectedProject.overlay_image}`
+  // Expose handle to parent
+  useImperativeHandle(ref, () => ({
+    cleanupOverlay,
+    resize: () => mapRef.current?.resize(),
+  }), [cleanupOverlay])
 
-    map.addSource(sourceId, {
-      type: 'image',
-      url: imageUrl,
-      coordinates: [
-        bounds.topLeft,
-        bounds.topRight,
-        bounds.bottomRight,
-        bounds.bottomLeft,
-      ],
-    })
-
-    map.addLayer({
-      id: layerId,
-      type: 'raster',
-      source: sourceId,
-      paint: { 'raster-opacity': 0.75 },
-    })
-  }, [selectedProject])
-
+  // Overlay management — controlled by parent via overlayVisible + overlayProject
   useEffect(() => {
-    if (mapLoaded && selectedProject?.overlay_image && selectedProject?.overlay_bounds) {
-      addOverlay()
+    if (!mapLoaded) return
+    const map = mapRef.current
+    if (!map) return
+
+    const project = overlayProject
+    if (!project?.overlay_image || !project?.overlay_bounds) return
+
+    const layerId  = `project:${project.id}:overlay-layer`
+    const sourceId = `project:${project.id}:overlay-source`
+
+    if (!overlayVisible) {
+      // Hide: set visibility none (keep source)
+      if (map.getLayer(layerId)) {
+        map.setLayoutProperty(layerId, 'visibility', 'none')
+      }
+      return
     }
-  }, [mapLoaded, selectedProject, addOverlay])
+
+    // Need to add source+layer if not present
+    if (!map.getSource(sourceId)) {
+      // Clean up any previous overlay from a different project
+      if (currentOverlayId.current && currentOverlayId.current !== project.id) {
+        cleanupOverlay(currentOverlayId.current)
+      }
+      const imageUrl = project.overlay_image.startsWith('http')
+        ? project.overlay_image
+        : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/overlay-images/${project.overlay_image}`
+
+      const bounds = project.overlay_bounds as {
+        topLeft: [number, number]
+        topRight: [number, number]
+        bottomRight: [number, number]
+        bottomLeft: [number, number]
+      }
+
+      map.addSource(sourceId, {
+        type: 'image',
+        url: imageUrl,
+        coordinates: [bounds.topLeft, bounds.topRight, bounds.bottomRight, bounds.bottomLeft],
+      })
+      map.addLayer({
+        id: layerId,
+        type: 'raster',
+        source: sourceId,
+        paint: { 'raster-opacity': overlayOpacity },
+      })
+      currentOverlayId.current = project.id
+    } else {
+      // Source exists: ensure visible and update opacity
+      if (map.getLayer(layerId)) {
+        map.setLayoutProperty(layerId, 'visibility', 'visible')
+        map.setPaintProperty(layerId, 'raster-opacity', overlayOpacity)
+      }
+    }
+  }, [mapLoaded, overlayVisible, overlayProject, overlayOpacity, cleanupOverlay])
 
   return (
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
-
-      {selectedProject && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-4">
-          <ProjectCard
-            project={selectedProject}
-            onClose={() => setSelectedProject(null)}
-          />
-        </div>
-      )}
-
-      <div className="absolute bottom-6 right-4 z-10 text-xs text-gray-400 bg-white/80 rounded px-2 py-1">
+      <div className="absolute bottom-6 right-4 z-10 text-xs text-gray-400 bg-white/80 rounded px-2 py-1 pointer-events-none">
         {filteredProjects.length} โครงการ
       </div>
     </div>
   )
-}
+})
+
+export default MapView
