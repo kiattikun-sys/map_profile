@@ -360,10 +360,10 @@ export default function ProjectDetailClient({ project, related = [] }: ProjectDe
                 <MapPin size={14} /> เปิดใน Google Maps
               </a>
               <Link
-                href="/"
+                href={`/?lat=${project.latitude}&lng=${project.longitude}&zoom=14`}
                 className="flex items-center justify-center gap-2 w-full py-2.5 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition-colors text-sm font-medium"
               >
-                ดูบนแผนที่ →
+                <MapPin size={14} /> ดูบนแผนที่
               </Link>
               <Link
                 href="/contact"

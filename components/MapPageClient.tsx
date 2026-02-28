@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { Project, Client, FilterState } from '@/types/database'
 import { supabase } from '@/lib/supabase'
@@ -28,6 +29,15 @@ export default function MapPageClient({ banner }: Props) {
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [heroDismissed, setHeroDismissed] = useState(false)
+
+  const searchParams = useSearchParams()
+  const flyTo = useMemo(() => {
+    const lat  = parseFloat(searchParams.get('lat')  ?? '')
+    const lng  = parseFloat(searchParams.get('lng')  ?? '')
+    const zoom = parseFloat(searchParams.get('zoom') ?? '14')
+    if (!isNaN(lat) && !isNaN(lng)) return { lat, lng, zoom }
+    return null
+  }, [searchParams])
 
   const bannerEnabled   = banner?.enabled ?? true
   const bannerHeadline  = banner?.headline ?? 'ออกแบบภูมิสถาปัตยกรรมและวิศวกรรมระดับชาติ'
@@ -203,7 +213,7 @@ export default function MapPageClient({ banner }: Props) {
               </div>
             </div>
           ) : (
-            <MapView projects={projects} filters={activeFilters} />
+            <MapView projects={projects} filters={activeFilters} flyTo={flyTo} />
           )}
         </div>
 

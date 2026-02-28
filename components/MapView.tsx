@@ -28,17 +28,25 @@ const LAYER_CLUSTER_COUNT = 'cluster-count'
 const LAYER_UNCLUSTERED = 'unclustered-point'
 const LAYER_UNCLUSTERED_HOVER = 'unclustered-point-hover'
 
+interface FlyToTarget {
+  lat: number
+  lng: number
+  zoom: number
+}
+
 interface MapViewProps {
   projects: Project[]
   filters: FilterState
+  flyTo?: FlyToTarget | null
 }
 
-export default function MapView({ projects, filters }: MapViewProps) {
+export default function MapView({ projects, filters, flyTo }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const projectsRef = useRef<Project[]>(projects)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const flyToHandled = useRef(false)
 
   const filteredProjects = projects.filter((p) => {
     if (filters.search && !p.name.toLowerCase().includes(filters.search.toLowerCase())) return false
@@ -228,6 +236,21 @@ export default function MapView({ projects, filters }: MapViewProps) {
     source.setData(buildGeoJSON(filteredProjects))
     setSelectedProject(null)
   }, [mapLoaded, filteredProjects, buildGeoJSON])
+
+  // flyTo — zoom to project location when arriving from project detail page
+  useEffect(() => {
+    if (!mapLoaded || !flyTo || flyToHandled.current) return
+    const map = mapRef.current
+    if (!map) return
+    flyToHandled.current = true
+    map.flyTo({
+      center: [flyTo.lng, flyTo.lat],
+      zoom: flyTo.zoom,
+      speed: 1.6,
+      curve: 1.4,
+      essential: true,
+    })
+  }, [mapLoaded, flyTo])
 
   const addOverlay = useCallback(() => {
     const map = mapRef.current
