@@ -339,9 +339,132 @@ WHERE id = '<project_id_here>';
 
 ---
 
-### 12.7 Phase 2 (รอหลัง Phase 1 ผ่าน)
+### 12.7 Phase 2 — Client Portal
 
-- เพิ่ม route `/client` — "My Projects" สำหรับ role=client
+- route `/client` — "My Projects" สำหรับ role=client
 - Project detail: แสดง updates list + form เพิ่ม update + อัปโหลดไฟล์
 - ซ่อน admin-only controls จาก client/viewer
 - Signed URL generation สำหรับ preview/download ไฟล์
+
+---
+
+## 13. User & Permission Management (Invite-Only)
+
+> ✅ Phase 3 — เพิ่มเมื่อมีนาคม 2569
+
+### 13.1 หลักการสำคัญ
+
+| กฎ | รายละเอียด |
+|----|------------|
+| **No self-signup** | ระบบปิด self-signup — ผู้ใช้ใหม่มาจาก Invite เท่านั้น |
+| **super เท่านั้น** | เข้าหน้า `/admin/users` และ `/admin/orgs` ได้ |
+| **Service Role Key** | ใช้เฉพาะ server-side ใน `lib/supabase-admin.ts` เท่านั้น — ห้าม expose ไป client |
+| **Defense in depth** | ทุก server action ตรวจ role=super ซ้ำอีกชั้น แม้ route guard จะผ่านแล้ว |
+
+---
+
+### 13.2 ENV Variables ที่ต้องมี
+
+เพิ่มใน `.env.local`:
+
+```env
+# Public (ใช้ได้ทั้ง client + server)
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+
+# Server-only (ห้ามขึ้นต้นด้วย NEXT_PUBLIC_)
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+
+# สำหรับ redirect หลัง invite email
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+```
+
+> ⚠️ **SUPABASE_SERVICE_ROLE_KEY** bypass RLS ทั้งหมด — ห้าม commit หรือ expose ใน client bundle
+
+---
+
+### 13.3 วิธี Invite User ใหม่
+
+1. Login ด้วย account ที่มี role = **super**
+2. ไปที่ **Admin Dashboard → Access → Users** (`/admin/users`)
+3. กดปุ่ม **"Invite User"** (มุมขวาบน)
+4. กรอก:
+   - **Email** — อีเมลผู้ใช้ที่ต้องการเชิญ
+   - **Role** — เลือก: `super` / `admin` / `client` / `viewer`
+   - **Client Org** — (บังคับ เฉพาะ role=client) เลือก org ที่ต้องการผูก
+5. กด **"Invite"**
+6. ระบบจะ:
+   - ส่ง invite email ไปยัง user (ผ่าน Supabase Auth)
+   - สร้าง profile พร้อม role/org ที่เลือกทันที
+   - หาก email นั้นมี user อยู่แล้ว → **อัปเดต role/org** และแสดง "User exists — updated"
+
+---
+
+### 13.4 วิธีเปลี่ยน Role / Org
+
+1. ไปที่ `/admin/users`
+2. ค้นหา user ด้วย email หรือ filter by role
+3. คลิก **role badge** ในแถวของ user → dropdown จะเปิด
+4. เลือก role ใหม่ (และ org ถ้า role=client)
+5. กด ✓ เพื่อบันทึก
+
+**Safety guards:**
+- super ไม่สามารถ demote ตัวเองหาก **ยังเป็น super คนสุดท้าย**
+- การเปลี่ยน role จาก client → อื่น จะ **clear client_org_id** อัตโนมัติ
+
+---
+
+### 13.5 วิธีจัดการ Client Orgs
+
+1. ไปที่ **Admin Dashboard → Access → Client Orgs** (`/admin/orgs`)
+2. **สร้าง org ใหม่:** กด "สร้าง Org" → กรอกชื่อ → กด "สร้าง"
+3. **ดูสมาชิก:** คลิกที่ชื่อ org → expand ออกมาแสดง users ทั้งหมดในนั้น
+4. ID ของ org ใช้ใน `UPDATE projects SET client_org_id = '<id>'` เพื่อผูกโครงการ
+
+---
+
+### 13.6 Disable / Enable User
+
+- ในตาราง users กดปุ่ม **"Disable"** ที่ column "จัดการ"
+- User จะถูก ban และไม่สามารถ login ได้ (ban_duration = 100 ปี)
+- กด **"Enable"** เพื่อยกเลิก ban
+- **ไม่สามารถ Disable ตัวเองได้**
+
+---
+
+### 13.7 Test Checklist — User Management
+
+**Setup:**
+- [ ] เพิ่ม `SUPABASE_SERVICE_ROLE_KEY` ใน `.env.local` และ Vercel env vars
+- [ ] เพิ่ม `NEXT_PUBLIC_SITE_URL` ใน Vercel env vars
+
+**Security:**
+- [ ] `/admin/users` — login ด้วย role=admin → redirect ไป `/admin` (ไม่ให้เข้า)
+- [ ] `/admin/users` — ไม่ได้ login → redirect ไป `/admin/login`
+- [ ] `/admin/orgs` — role ≠ super → redirect ไป `/admin`
+- [ ] เรียก `inviteUser()` โดยตรงจาก client → throw FORBIDDEN
+
+**Invite:**
+- [ ] Invite email ใหม่ → user ได้รับ email → login แล้วเห็น profile ถูกต้อง
+- [ ] Invite email ที่มีอยู่แล้ว → แสดง "User exists — updated" + profile เปลี่ยน
+- [ ] Invite role=client โดยไม่เลือก org → ปุ่ม Invite disabled / error
+
+**Role change:**
+- [ ] เปลี่ยน role=viewer → client → เลือก org → บันทึก → ตรวจ profiles table
+- [ ] Demote super คนสุดท้าย → แสดง error "ไม่สามารถ demote super คนสุดท้ายได้"
+
+**Orgs:**
+- [ ] สร้าง org ใหม่ → ปรากฏในรายการ
+- [ ] Expand org → เห็นสมาชิก (ถ้ามี)
+
+---
+
+### 13.8 Troubleshooting
+
+| ปัญหา | วิธีแก้ |
+|-------|---------|
+| Invite แล้ว error "Missing SUPABASE_SERVICE_ROLE_KEY" | เพิ่ม env var แล้ว restart dev server หรือ redeploy |
+| Invite แล้วไม่ได้รับ email | ตรวจ Supabase Dashboard → Auth Logs; ตรวจ spam folder; ตรวจ SMTP settings |
+| profiles ไม่ถูกสร้างหลัง invite | รัน SQL trigger fix: `CREATE OR REPLACE FUNCTION handle_new_user()...` (ดู Section 12) |
+| `/admin/users` redirect กลับ `/admin` ทั้งที่เป็น super | ตรวจ profiles table ว่า role = 'super' จริงหรือไม่: `SELECT role FROM profiles WHERE id = auth.uid()` |
+| เปลี่ยน role แล้วไม่ save | ตรวจ Vercel/server logs หา FORBIDDEN หรือ DB error |
